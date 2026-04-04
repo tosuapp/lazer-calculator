@@ -26,8 +26,7 @@ public readonly struct DifficultyAttrsData
     public double SpeedDifficultStrainCount { get; init; }
     public int NCircles { get; init; }
     public int NSliders { get; init; }
-    public int NLargeTicks { get; init; }
-    public int NSpinner { get; init; }
+    public int NSpinners { get; init; }
     #endregion
 
     #region osu!taiko
@@ -58,9 +57,7 @@ public readonly struct DifficultyAttrsData
 
         NCircles = attrs.HitCircleCount,
         NSliders = attrs.SliderCount,
-        // TODO::
-        NLargeTicks = 0,
-        NSpinner = attrs.SpinnerCount,
+        NSpinners = attrs.SpinnerCount,
     };
 
     private static DifficultyAttrsData FromMod(TaikoDifficultyAttributes attrs) => new()
