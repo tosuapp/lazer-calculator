@@ -26,6 +26,11 @@ public class Beatmap
     /// </summary>
     public int Mode => ruleset.RulesetInfo.OnlineID;
 
+    /// <summary>
+    /// Total number of hit objects in the beatmap.
+    /// </summary>
+    public int HitObjectCount => inner.HitObjects.Count;
+
     private Beatmap(IBeatmap inner, Ruleset ruleset)
     {
         this.inner = inner;

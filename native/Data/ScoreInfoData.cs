@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using Microsoft.JavaScript.NodeApi;
 using System.Linq;
 using osu.Game.Rulesets;
-using osu.Game.Rulesets.Scoring;
 using osu.Game.Scoring;
 using osu.Game.Beatmaps;
+using osu.Game.Scoring.Legacy;
 
 namespace tosu.pp.Data;
 
@@ -29,27 +29,23 @@ public readonly struct ScoreInfoData
     public required int N50 { get; init; }
     public required int Misses { get; init; }
 
-    private Dictionary<HitResult, int> CreateStatistics() => new Dictionary<HitResult, int>
+    internal ScoreInfo ToPerformanceScoreInfo(BeatmapInfo info, Ruleset ruleset)
     {
-        [HitResult.LargeTickHit] = LargeTickHits,
-        [HitResult.LargeTickMiss] = LargeTickMisses,
-        [HitResult.SmallTickHit] = SmallTickHits,
-        [HitResult.SmallTickMiss] = SmallTickMisses,
-        [HitResult.SliderTailHit] = SliderEndHits,
-        [HitResult.Perfect] = NGeki,
-        [HitResult.Great] = N300,
-        [HitResult.Ok] = N100,
-        [HitResult.Meh] = N50,
-        [HitResult.Miss] = Misses,
-    };
+        var scoreInfo = new ScoreInfo(info)
+        {
+            TotalScore = TotalScore,
+            LegacyTotalScore = TotalScore,
+            Mods = Mods.Select(ruleset.CreateModFromAcronym).Where(mod => mod is not null).ToArray()!,
+            MaxCombo = MaxCombo,
+            Accuracy = Accuracy,
+        };
 
-    internal ScoreInfo ToPerformanceScoreInfo(BeatmapInfo info, Ruleset ruleset) => new ScoreInfo(info)
-    {
-        TotalScore = TotalScore,
-        LegacyTotalScore = TotalScore,
-        Mods = Mods.Select(ruleset.CreateModFromAcronym).Where(mod => mod is not null).ToArray()!,
-        MaxCombo = MaxCombo,
-        Accuracy = Accuracy,
-        Statistics = CreateStatistics(),
-    };
+        scoreInfo.SetCountGeki(NGeki);
+        scoreInfo.SetCountKatu(NKatu);
+        scoreInfo.SetCount300(N300);
+        scoreInfo.SetCount100(N100);
+        scoreInfo.SetCount50(N50);
+        scoreInfo.SetCountMiss(Misses);
+        return scoreInfo;
+    }
 }
