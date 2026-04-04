@@ -5,6 +5,7 @@
   "author": "storycraft <storycraft@pancake.sh>",
   "private": true,
   "main": "dist/index",
+  "types": "native/dist/binding.d.ts",
   "files": [
     "dist/**/*",
     "native/dist/binding.node",

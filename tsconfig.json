@@ -9,7 +9,6 @@
     "outDir": "dist",
     "allowJs": true,
     "esModuleInterop": true,
-    "declaration": true,
     "noCheck": true,
     "strict": true,
     "noImplicitAny": false,
