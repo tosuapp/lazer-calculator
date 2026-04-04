@@ -22,9 +22,9 @@ public class Beatmap
     private readonly Ruleset ruleset;
 
     /// <summary>
-    /// The online ID of the beatmap, also referred to as legacy gamemode ID.
+    /// The online ID of the beatmap's ruleset. Also known as legacy gamemode ID.
     /// </summary>
-    public int OnlineID => inner.BeatmapInfo.OnlineID;
+    public int Mode => inner.BeatmapInfo.Ruleset.OnlineID;
 
     private Beatmap(IBeatmap inner, Ruleset ruleset)
     {
