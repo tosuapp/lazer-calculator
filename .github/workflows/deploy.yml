@@ -36,7 +36,7 @@ jobs:
 
       - name: Apply patches
         working-directory: vendor
-        run: git apply ../patches/gradual-pp-calc.patch
+        run: git am -3 ../patches/0001-Gradual-diff-calculator.patch
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4

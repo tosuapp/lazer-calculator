@@ -1,3 +1,14 @@
+From 15098e781f20486695d1fd5355229d9a9b0ef3f5 Mon Sep 17 00:00:00 2001
+From: storycraft <storycraft@pancake.sh>
+Date: Sat, 4 Apr 2026 14:19:10 +0900
+Subject: [PATCH] Gradual diff calculator
+
+---
+ .../Difficulty/DifficultyCalculator.cs        |  22 ++
+ .../Difficulty/GradualDifficultyEnumerator.cs | 230 ++++++++++++++++++
+ 2 files changed, 252 insertions(+)
+ create mode 100644 osu.Game/Rulesets/Difficulty/GradualDifficultyEnumerator.cs
+
 diff --git a/osu.Game/Rulesets/Difficulty/DifficultyCalculator.cs b/osu.Game/Rulesets/Difficulty/DifficultyCalculator.cs
 index 7acfbe651f..f556c52e25 100644
 --- a/osu.Game/Rulesets/Difficulty/DifficultyCalculator.cs
@@ -267,3 +278,6 @@ index 0000000000..8328634ac0
 +        }
 +    }
 +}
+-- 
+2.33.0.windows.2
+
