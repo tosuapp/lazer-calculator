@@ -14,14 +14,9 @@ public class GradualDifficulty
         this.inner = inner;
     }
 
-    public bool MoveNext()
+    public bool Advance()
     {
-        return inner.MoveNext();
-    }
-
-    public DifficultyAttrs CreateDifficultyAttrs()
-    {
-        return new(inner.CreateDifficultyAttributes());
+        return inner.Advance();
     }
 
     public void SkipToTime(double time)
@@ -36,7 +31,12 @@ public class GradualDifficulty
 
     public void SkipToEnd()
     {
-        while (inner.MoveNext()) { }
+        inner.SkipToEnd();
+    }
+
+    public DifficultyAttrs CreateDifficultyAttrs()
+    {
+        return new(inner.CreateDifficultyAttributes());
     }
 
     /// <summary>

@@ -13,6 +13,7 @@
   ],
   "scripts": {
     "postinstall": "pnpm run build:native",
+    "create-patch": "cd vendor && git format-patch -m origin/master..HEAD --stdout > ../patches/0001-Gradual-diff-calculator.patch",
     "build:native": "dotnet publish native --ucr",
     "build": "tsc"
   },

@@ -1,7 +1,7 @@
 From 15098e781f20486695d1fd5355229d9a9b0ef3f5 Mon Sep 17 00:00:00 2001
 From: storycraft <storycraft@pancake.sh>
 Date: Sat, 4 Apr 2026 14:19:10 +0900
-Subject: [PATCH 1/2] Gradual diff calculator
+Subject: [PATCH 1/3] Gradual diff calculator
 
 ---
  .../Difficulty/DifficultyCalculator.cs        |  22 ++
@@ -285,7 +285,7 @@ index 0000000000..8328634ac0
 From c5e4e7093ede45d2c7a64d1cca7e0e14350ac51f Mon Sep 17 00:00:00 2001
 From: storycraft <storycraft@pancake.sh>
 Date: Sat, 4 Apr 2026 20:57:13 +0900
-Subject: [PATCH 2/2] Split CreateDifficultyAttributes
+Subject: [PATCH 2/3] Split CreateDifficultyAttributes
 
 ---
  .../Difficulty/GradualDifficultyEnumerator.cs      | 14 ++++++++------
@@ -326,6 +326,101 @@ index 8328634ac0..f2574061f7 100644
          }
  
          public void Skip(int offset)
+-- 
+2.33.0.windows.2
+
+
+From f4aba8afca6b771ca0004e1b5eae3818a32b989b Mon Sep 17 00:00:00 2001
+From: storycraft <storycraft@pancake.sh>
+Date: Sat, 4 Apr 2026 22:55:51 +0900
+Subject: [PATCH 3/3] Add updateDifficultyHitObjects for handling on advance
+ and skip
+
+---
+ .../Difficulty/GradualDifficultyEnumerator.cs | 40 ++++++++++++++-----
+ 1 file changed, 29 insertions(+), 11 deletions(-)
+
+diff --git a/osu.Game/Rulesets/Difficulty/GradualDifficultyEnumerator.cs b/osu.Game/Rulesets/Difficulty/GradualDifficultyEnumerator.cs
+index f2574061f7..3f100118e4 100644
+--- a/osu.Game/Rulesets/Difficulty/GradualDifficultyEnumerator.cs
++++ b/osu.Game/Rulesets/Difficulty/GradualDifficultyEnumerator.cs
+@@ -49,17 +49,16 @@ public sealed class GradualDifficultyEnumerator
+             Skills = skills;
+         }
+ 
+-        public bool MoveNext(CancellationToken cancellationToken = default)
++        private void updateDifficultyHitObjects(CancellationToken cancellationToken)
+         {
+-            var hitObject = beatmap.HitObjects[progressiveBeatmap.HitObjects.Count];
+-            if (hitObject == null)
+-                return false;
+-            progressiveBeatmap.HitObjects.Add(hitObject);
++            if (beatmap.HitObjects.Count <= progressiveBeatmap.HitObjects.Count)
++                return;
+ 
++            var lastHitObject = beatmap.HitObjects[progressiveBeatmap.HitObjects.Count];
+             while (difficultyHitObjectCursor < difficultyHitObjects.Length)
+             {
+                 var difficultyHitObject = difficultyHitObjects[difficultyHitObjectCursor];
+-                if (difficultyHitObject.BaseObject.GetEndTime() > hitObject.GetEndTime())
++                if (difficultyHitObject.BaseObject.GetEndTime() > lastHitObject.GetEndTime())
+                 {
+                     break;
+                 }
+@@ -71,8 +70,6 @@ public bool MoveNext(CancellationToken cancellationToken = default)
+                     skill.Process(difficultyHitObject);
+                 }
+             }
+-
+-            return true;
+         }
+ 
+         public DifficultyAttributes CreateDifficultyAttributes()
+@@ -80,20 +77,41 @@ public DifficultyAttributes CreateDifficultyAttributes()
+             return createDifficultyAttributes(progressiveBeatmap, mods, Skills, clockRate);
+         }
+ 
+-        public void Skip(int offset)
++        public bool Advance(CancellationToken cancellationToken = default)
++        {
++            if (beatmap.HitObjects.Count <= progressiveBeatmap.HitObjects.Count)
++                return false;
++
++            var hitObject = beatmap.HitObjects[progressiveBeatmap.HitObjects.Count];
++            progressiveBeatmap.HitObjects.Add(hitObject);
++            updateDifficultyHitObjects(cancellationToken);
++
++            return true;
++        }
++
++        public void Skip(int offset, CancellationToken cancellationToken = default)
+         {
+             progressiveBeatmap.HitObjects.AddRange(beatmap.HitObjects.Skip(progressiveBeatmap.HitObjects.Count).Take(offset));
++            updateDifficultyHitObjects(cancellationToken);
+         }
+ 
+-        public void SkipToTime(double time)
++        public void SkipToTime(double time, CancellationToken cancellationToken = default)
+         {
+             while (progressiveBeatmap.HitObjects.Count < beatmap.HitObjects.Count)
+             {
+                 var hitObject = beatmap.HitObjects[progressiveBeatmap.HitObjects.Count];
+-                if (hitObject == null || hitObject.StartTime >= time)
++                if (hitObject.StartTime >= time)
+                     break;
+                 progressiveBeatmap.HitObjects.Add(hitObject);
+             }
++
++            updateDifficultyHitObjects(cancellationToken);
++        }
++
++        public void SkipToEnd(CancellationToken cancellationToken = default)
++        {
++            progressiveBeatmap.HitObjects.AddRange(beatmap.HitObjects.Skip(progressiveBeatmap.HitObjects.Count));
++            updateDifficultyHitObjects(cancellationToken);
+         }
+ 
+         /// <summary>
 -- 
 2.33.0.windows.2
 
