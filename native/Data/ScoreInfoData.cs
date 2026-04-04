@@ -18,7 +18,9 @@ public readonly struct ScoreInfoData
 
     public required int MaxCombo { get; init; }
     public required int LargeTickHits { get; init; }
+    public required int LargeTickMisses { get; init; }
     public required int SmallTickHits { get; init; }
+    public required int SmallTickMisses { get; init; }
     public required int SliderEndHits { get; init; }
     public required int NGeki { get; init; }
     public required int NKatu { get; init; }
@@ -30,7 +32,9 @@ public readonly struct ScoreInfoData
     private Dictionary<HitResult, int> CreateStatistics() => new Dictionary<HitResult, int>
     {
         [HitResult.LargeTickHit] = LargeTickHits,
+        [HitResult.LargeTickMiss] = LargeTickMisses,
         [HitResult.SmallTickHit] = SmallTickHits,
+        [HitResult.SmallTickMiss] = SmallTickMisses,
         [HitResult.SliderTailHit] = SliderEndHits,
         [HitResult.Perfect] = NGeki,
         [HitResult.Great] = N300,
