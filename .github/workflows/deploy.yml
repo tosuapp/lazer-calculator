@@ -34,6 +34,11 @@ jobs:
           ref: ${{ inputs.ref }}
           path: ./vendor
 
+      - name: Setup cd
+        run: |
+          git config user.name 'Tosu Lazer pp calc CD'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
       - name: Apply patches
         working-directory: vendor
         run: git am -3 ../patches/0001-Gradual-diff-calculator.patch
