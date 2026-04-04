@@ -38,11 +38,6 @@ jobs:
         working-directory: vendor
         run: git apply ../patches/gradual-pp-calc.patch
 
-      - name: Extract Commit SHA
-        id: commit-sha
-        run: |
-          "short_sha=" + "${{ github.sha }}".SubString(0, 8) >> $env:GITHUB_OUTPUT
-
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
 
@@ -68,5 +63,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: 'tosu-lazer-pp-${{ steps.commit-sha.outputs.short_sha }}-${{ matrix.os }}'
+          name: 'tosu-lazer-pp-${{ matrix.os }}'
           path: tosu-lazer-pp.tgz
