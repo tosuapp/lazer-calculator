@@ -24,6 +24,7 @@ jobs:
         version: [10, 12, 14]
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
+    environment: deploy
     steps:
       - uses: actions/checkout@v6
     
