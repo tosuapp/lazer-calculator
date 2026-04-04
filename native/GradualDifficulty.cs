@@ -27,4 +27,9 @@ public class GradualDifficulty
     {
         inner.SkipToTime(time);
     }
+
+    public void Skip(int offset)
+    {
+        inner.Skip(offset);
+    }
 }
