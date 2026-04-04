@@ -69,15 +69,13 @@ public class Beatmap
     }
 
     /// <summary>
-    /// Calculate timed difficulty over each hit objects
+    /// Calculate difficulty
     /// </summary>
-    public TimedDifficultyAttrsData[] CalculateTimedDifficulty(IEnumerable<string> mods)
+    public DifficultyAttrs CalculateDifficulty(IEnumerable<string> mods)
     {
-        var diff = ruleset.CreateDifficultyCalculator(new DiffWorkingBeatmap(inner)).CalculateTimed(
+        return new(ruleset.CreateDifficultyCalculator(new DiffWorkingBeatmap(inner)).Calculate(
             mods.Select(ruleset.CreateModFromAcronym).Where(mod => mod is not null)
-        ) ?? [];
-
-        return diff.Select(TimedDifficultyAttrsData.FromAttrs).ToArray();
+        ));
     }
 
     /// <summary>
