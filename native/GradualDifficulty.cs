@@ -14,13 +14,14 @@ public class GradualDifficulty
         this.inner = inner;
     }
 
-    public TimedDifficultyAttrsData? CalculateNext()
+    public bool MoveNext()
     {
-        var attrs = inner.CalculateNext();
-        if (attrs == null)
-            return null;
+        return inner.MoveNext();
+    }
 
-        return TimedDifficultyAttrsData.FromAttrs(attrs);
+    public DifficultyAttrs CreateDifficultyAttrs()
+    {
+        return new(inner.CreateDifficultyAttributes());
     }
 
     public void SkipToTime(double time)
@@ -32,4 +33,14 @@ public class GradualDifficulty
     {
         inner.Skip(offset);
     }
+
+    public void SkipToEnd()
+    {
+        while (inner.MoveNext()) { }
+    }
+
+    /// <summary>
+    /// Gets the strains of the current difficulty section.
+    /// </summary>
+    public StrainsData GetCurrentStrains() => StrainsData.FromSkills(inner.Skills);
 }

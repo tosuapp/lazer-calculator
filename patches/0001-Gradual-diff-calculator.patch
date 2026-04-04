@@ -1,7 +1,7 @@
 From 15098e781f20486695d1fd5355229d9a9b0ef3f5 Mon Sep 17 00:00:00 2001
 From: storycraft <storycraft@pancake.sh>
 Date: Sat, 4 Apr 2026 14:19:10 +0900
-Subject: [PATCH] Gradual diff calculator
+Subject: [PATCH 1/2] Gradual diff calculator
 
 ---
  .../Difficulty/DifficultyCalculator.cs        |  22 ++
@@ -278,6 +278,54 @@ index 0000000000..8328634ac0
 +        }
 +    }
 +}
+-- 
+2.33.0.windows.2
+
+
+From c5e4e7093ede45d2c7a64d1cca7e0e14350ac51f Mon Sep 17 00:00:00 2001
+From: storycraft <storycraft@pancake.sh>
+Date: Sat, 4 Apr 2026 20:57:13 +0900
+Subject: [PATCH 2/2] Split CreateDifficultyAttributes
+
+---
+ .../Difficulty/GradualDifficultyEnumerator.cs      | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/osu.Game/Rulesets/Difficulty/GradualDifficultyEnumerator.cs b/osu.Game/Rulesets/Difficulty/GradualDifficultyEnumerator.cs
+index 8328634ac0..f2574061f7 100644
+--- a/osu.Game/Rulesets/Difficulty/GradualDifficultyEnumerator.cs
++++ b/osu.Game/Rulesets/Difficulty/GradualDifficultyEnumerator.cs
+@@ -49,11 +49,11 @@ public sealed class GradualDifficultyEnumerator
+             Skills = skills;
+         }
+ 
+-        public TimedDifficultyAttributes? CalculateNext(CancellationToken cancellationToken = default)
++        public bool MoveNext(CancellationToken cancellationToken = default)
+         {
+             var hitObject = beatmap.HitObjects[progressiveBeatmap.HitObjects.Count];
+             if (hitObject == null)
+-                return null;
++                return false;
+             progressiveBeatmap.HitObjects.Add(hitObject);
+ 
+             while (difficultyHitObjectCursor < difficultyHitObjects.Length)
+@@ -72,10 +72,12 @@ public sealed class GradualDifficultyEnumerator
+                 }
+             }
+ 
+-            return new TimedDifficultyAttributes(
+-                hitObject.GetEndTime(),
+-                createDifficultyAttributes(progressiveBeatmap, mods, Skills, clockRate)
+-            );
++            return true;
++        }
++
++        public DifficultyAttributes CreateDifficultyAttributes()
++        {
++            return createDifficultyAttributes(progressiveBeatmap, mods, Skills, clockRate);
+         }
+ 
+         public void Skip(int offset)
 -- 
 2.33.0.windows.2
 
