@@ -11,4 +11,4 @@ export const PerformanceAttrsData = native.PerformanceAttrsData;
 export const ScoreInfoData = native.ScoreInfoData;
 export const StrainsData = native.StrainsData;
 export const HitWindows = native.HitWindows;
-export const ScoreGenerator = native.ScoreGenerator;
+export const ScoreSimulator = native.ScoreSimulator;

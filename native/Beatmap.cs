@@ -8,8 +8,6 @@ using osu.Game.Beatmaps;
 using osu.Game.IO;
 using osu.Game.Rulesets;
 using osu.Game.Rulesets.Mods;
-using osu.Game.Rulesets.Scoring;
-using osu.Game.Scoring;
 using tosu.pp.Data;
 using tosu.pp.Internal;
 using Decoder = osu.Game.Beatmaps.Formats.Decoder;
@@ -20,8 +18,8 @@ namespace tosu.pp;
 [JSExport]
 public class Beatmap
 {
-    private readonly IBeatmap inner;
-    private readonly Ruleset ruleset;
+    internal readonly IBeatmap inner;
+    internal readonly Ruleset ruleset;
 
     /// <summary>
     /// The online ID of the current beatmap's ruleset. Also known as legacy gamemode ID.
@@ -69,18 +67,6 @@ public class Beatmap
         }
 
         return BeatmapDifficultyData.FromDifficulty(diff);
-    }
-
-    /// <summary>
-    /// Create score generator with mods applied
-    /// </summary>
-    public ScoreGenerator CreateScoreGenerator(IEnumerable<string> mods)
-    {
-        return new ScoreGenerator(
-            ruleset,
-            inner,
-            mods.Select(ruleset.CreateModFromAcronym).Where(mod => mod is not null).ToArray()!
-        );
     }
 
     /// <summary>
