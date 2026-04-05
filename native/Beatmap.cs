@@ -57,17 +57,12 @@ public class Beatmap
     /// </summary>
     public BeatmapDifficultyData GetBeatmapDifficulty(IEnumerable<string> mods)
     {
-        var diff = inner.BeatmapInfo.Difficulty;
-        foreach (var mod in mods)
-        {
-            var m = ruleset.CreateModFromAcronym(mod);
-            if (m is IApplicableToDifficulty diffMod)
-            {
-                diffMod.ApplyToDifficulty(diff);
-            }
-        }
-
-        return BeatmapDifficultyData.FromDifficulty(diff);
+        return BeatmapDifficultyData.FromDifficulty(
+            ruleset.GetAdjustedDisplayDifficulty(
+                inner.BeatmapInfo,
+                mods.Select(ruleset.CreateModFromAcronym).Where(mod => mod is not null).ToArray()!
+            )
+        );
     }
 
     /// <summary>
