@@ -21,6 +21,7 @@ public static class ScoreSimulator
 
     /// <summary>
     /// Create a score closest to given accuracy with the current beatmap and mods, but only with the first `count` hitobjects.
+    /// Generated score only have hit results and accuracy.
     /// </summary>
     /// <param name="count"></param>
     public static ScoreInfoData CreatePartialScore(Beatmap beatmap, int count, string[] mods, double accuracy) => ScoreInfoData.FromScoreInfo(
@@ -37,6 +38,7 @@ public static class ScoreSimulator
 
     /// <summary>
     /// Create a score closest to given accuracy with the current beatmap and mods.
+    /// Generated score only have hit results and accuracy.
     /// </summary>
     public static ScoreInfoData CreateScore(Beatmap beatmap, string[] mods, double accuracy) =>
         ScoreInfoData.FromScoreInfo(CreateScoreInfo(beatmap.inner, beatmap.Mode, mods, accuracy));
@@ -64,7 +66,6 @@ public static class ScoreSimulator
 
         return new ScoreInfo(beatmap.BeatmapInfo, beatmap.BeatmapInfo.Ruleset)
         {
-            MaxCombo = beatmap.GetMaxCombo(),
             Accuracy = accuracy,
             Statistics = statistics
         };
