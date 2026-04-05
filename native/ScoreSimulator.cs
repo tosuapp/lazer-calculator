@@ -64,6 +64,7 @@ public static class ScoreSimulator
 
         return new ScoreInfo(beatmap.BeatmapInfo, beatmap.BeatmapInfo.Ruleset)
         {
+            MaxCombo = beatmap.GetMaxCombo(),
             Accuracy = accuracy,
             Statistics = statistics
         };
