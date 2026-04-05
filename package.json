@@ -8,6 +8,7 @@
   "types": "native/dist/binding.d.ts",
   "scripts": {
     "postinstall": "pnpm run clone-default-osu && pnpm run ci:apply-patch && pnpm run build:native && pnpm run build",
+    "setup-dev": "pnpm run clone-default-osu && pnpm run apply-patch",
     "clone-default-osu": "git clone --branch master https://github.com/ppy/osu vendor",
     "create-patch": "cd vendor && git format-patch -m origin/master..HEAD --stdout > ../patches/0001-Gradual-diff-calculator.patch",
     "ci:apply-patch": "cd vendor && git apply -C0 -3 ../patches/0001-Gradual-diff-calculator.patch",
