@@ -72,27 +72,15 @@ public class Beatmap
     }
 
     /// <summary>
-    /// Create a perfect score for the beatmap with mods applied
+    /// Create score generator with mods applied
     /// </summary>
-    public ScoreInfoData CreatePerfectScore(IEnumerable<string> mods)
+    public ScoreGenerator CreateScoreGenerator(IEnumerable<string> mods)
     {
-        var workingBeatmap = new DiffWorkingBeatmap(inner);
-        Mod[] modsArray = mods.Select(ruleset.CreateModFromAcronym).Where(mod => mod is not null).ToArray()!;
-        ScoreProcessor scoreProcessor = ruleset.CreateScoreProcessor();
-        scoreProcessor.Mods.Value = modsArray;
-        scoreProcessor.ApplyBeatmap(workingBeatmap.GetPlayableBeatmap(ruleset.RulesetInfo, modsArray, default));
-
-        return ScoreInfoData.FromScoreInfo(new(inner.BeatmapInfo, ruleset.RulesetInfo)
-        {
-            Passed = true,
-            Accuracy = 1,
-            Mods = modsArray,
-            MaxCombo = scoreProcessor.MaximumCombo,
-            Combo = scoreProcessor.MaximumCombo,
-            TotalScore = scoreProcessor.MaximumTotalScore,
-            Statistics = scoreProcessor.MaximumStatistics,
-            MaximumStatistics = scoreProcessor.MaximumStatistics
-        });
+        return new ScoreGenerator(
+            ruleset,
+            inner,
+            mods.Select(ruleset.CreateModFromAcronym).Where(mod => mod is not null).ToArray()!
+        );
     }
 
     /// <summary>
