@@ -55,7 +55,7 @@ public readonly struct ScoreInfoData
         [HitResult.Miss] = Misses,
     };
 
-    internal ScoreInfo ToPerformanceScoreInfo(BeatmapInfo info, Ruleset ruleset) => new ScoreInfo(info)
+    internal ScoreInfo ToPerformanceScoreInfo(BeatmapInfo info, Ruleset ruleset) => new(info, ruleset.RulesetInfo)
     {
         TotalScore = TotalScore,
         LegacyTotalScore = TotalScore,
