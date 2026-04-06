@@ -15,7 +15,7 @@
     "apply-patch": "cd vendor && git am -C0 -3 ../patches/0001-Gradual-diff-calculator.patch",
     "build:native": "dotnet publish native --ucr",
     "build": "tsc",
-    "ci:build": "pnpm run build
+    "ci:build": "pnpm run build"
   },
   "dependencies": {
     "typescript": "^6.0.2"
