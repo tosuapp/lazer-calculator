@@ -50,9 +50,6 @@ jobs:
       - name: Apply patches
         run: pnpm run ci:apply-patch
 
-      - name: Build
-        run: pnpm run ci:build
-
       - name: Pack package
         run: pnpm pack --out tosu-lazer-pp.tgz
 
