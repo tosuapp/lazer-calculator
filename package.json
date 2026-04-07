@@ -1,28 +1,11 @@
 {
-  "name": "@tosu/pp",
-  "version": "0.1.0",
-  "description": "PP calculator for tosu",
   "author": "storycraft <storycraft@pancake.sh>",
   "private": true,
-  "main": "dist/index",
-  "types": "native/dist/binding.d.ts",
   "scripts": {
-    "postinstall": "pnpm run clone-default-osu && pnpm run ci:apply-patch && pnpm run build",
-    "prepack": "pnpm run build",
-    "setup-dev": "pnpm run clone-default-osu && pnpm run apply-patch",
-    "clone-default-osu": "git clone --branch master https://github.com/ppy/osu vendor",
-    "create-patch": "cd vendor && git format-patch -m origin/master..HEAD --stdout > ../patches/0001-Gradual-diff-calculator.patch",
-    "ci:apply-patch": "cd vendor && git apply -C0 -3 ../patches/0001-Gradual-diff-calculator.patch",
-    "apply-patch": "cd vendor && git am -C0 -3 ../patches/0001-Gradual-diff-calculator.patch",
-    "build": "pnpm run build:native && pnpm run build:ts",
-    "build:native": "dotnet publish native --ucr",
-    "build:ts": "tsc"
-  },
-  "dependencies": {
-    "typescript": "^6.0.2"
-  },
-  "devDependencies": {
-    "node-api-dotnet": "^0.9.19"
+    "apply-patch": "pnpm --filter @tosu/pp apply-patch",
+    "apply-patch:prod": "pnpm --filter @tosu/pp apply-patch:prod",
+    "setup-dev": "pnpm --filter @tosu/pp setup-dev",
+    "build": "pnpm --filter @tosu/pp build"
   },
   "packageManager": "pnpm@10.28.0+sha512.05df71d1421f21399e053fde567cea34d446fa02c76571441bfc1c7956e98e363088982d940465fd34480d4d90a0668bc12362f8aa88000a64e83d0b0e47be48"
 }

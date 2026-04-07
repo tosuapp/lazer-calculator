@@ -21,8 +21,11 @@ jobs:
   deploy:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+        platform: [
+          { ci: 'windows-latest', name: 'win32-x64' },
+          { ci: 'ubuntu-latest', name: 'linux-x64' }
+        ]
+    runs-on: ${{ matrix.platform.ci }}
     environment: deploy
     steps:
       - uses: actions/checkout@v6
@@ -32,7 +35,7 @@ jobs:
         with:
           repository: ${{ inputs.osu }}
           ref: ${{ inputs.ref }}
-          path: ./vendor
+          path: ./lib/vendor
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -45,16 +48,22 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --ignore-scripts
 
       - name: Apply patches
-        run: pnpm run ci:apply-patch
+        run: pnpm run apply-patch:prod
+
+      - name: Build native module
+        run: pnpm run build
+
+      - name: Copy artifacts
+        run: cp lib/native/dist/binding.node prebuilts/${{ matrix.platform.name }} && cp lib/native/dist/binding.d.ts prebuilts/${{ matrix.platform.name }}
 
       - name: Pack package
-        run: pnpm pack --out tosu-lazer-pp.tgz
+        run: pnpm pack --filter @tosu/pp-${{ matrix.platform.name }} --out prebuilt.tgz
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: 'tosu-lazer-pp-${{ matrix.os }}'
-          path: tosu-lazer-pp.tgz
+          name: 'tosu-lazer-pp-${{ matrix.platform.name }}'
+          path: prebuilt.tgz

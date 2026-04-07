@@ -1,0 +1,9 @@
+{
+  "name": "@tosu/pp-linux-x64",
+  "version": "0.1.0",
+  "description": "Prebuilt AOT lazer pp calculator for tosu",
+  "author": "storycraft <storycraft@pancake.sh>",
+  "private": true,
+  "main": "binding.node",
+  "types": "binding.d.ts"
+}

@@ -1,0 +1,15 @@
+{
+  "name": "@tosu/pp-build",
+  "version": "0.1.0",
+  "description": "AOT lazer pp calculator for tosu",
+  "author": "storycraft <storycraft@pancake.sh>",
+  "private": true,
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "postinstall": "cd node_modules/@tosu/pp && npm run clone-default-osu && npm run ci:apply-patch && npm run build"
+  },
+  "dependencies": {
+    "@tosu/pp": "workspace:*"
+  }
+}

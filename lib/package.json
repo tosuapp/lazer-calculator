@@ -1,0 +1,22 @@
+{
+  "name": "@tosu/pp",
+  "version": "0.1.0",
+  "description": "AOT lazer pp calculator and utility wrapper for nodejs",
+  "author": "storycraft <storycraft@pancake.sh>", 
+  "private": true,
+  "main": "native/dist/binding.node",
+  "types": "native/dist/binding.d.ts",
+  "scripts": {
+    "postinstall": "npm run clone-default-osu:prod && npm run apply-patch:prod && npm run build",
+    "setup-dev": "npm run clone-default-osu && npm run apply-patch",
+    "clone-default-osu": "git clone --branch master https://github.com/ppy/osu vendor",
+    "clone-default-osu:prod": "git clone --depth 1 --branch master https://github.com/ppy/osu vendor",
+    "create-patch": "cd vendor && git format-patch -m origin/master..HEAD --stdout > ../patches/0001-Gradual-diff-calculator.patch",
+    "apply-patch": "cd vendor && git am -3 ../patches/0001-Gradual-diff-calculator.patch",
+    "apply-patch:prod": "cd vendor && git apply -3 ../patches/0001-Gradual-diff-calculator.patch",
+    "build": "dotnet publish native --ucr"
+  },
+  "devDependencies": {
+    "node-api-dotnet": "^0.9.19"
+  }
+}
