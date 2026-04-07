@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <PublishDir>dist</PublishDir>
     <PublishAot>true</PublishAot>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PublishNodeModule>true</PublishNodeModule>
     <IlcGenerateMstatFile>true</IlcGenerateMstatFile>
     <IlcGenerateDgmlFile>true</IlcGenerateDgmlFile>
