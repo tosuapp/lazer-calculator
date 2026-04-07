@@ -2,8 +2,8 @@
   "author": "storycraft <storycraft@pancake.sh>",
   "private": true,
   "scripts": {
+    "create-patch": "pnpm --filter @tosu/pp create-patch",
     "apply-patch": "pnpm --filter @tosu/pp apply-patch",
-    "apply-patch:prod": "pnpm --filter @tosu/pp apply-patch:prod",
     "setup-dev": "pnpm --filter @tosu/pp setup-dev",
     "build": "pnpm --filter @tosu/pp build"
   },

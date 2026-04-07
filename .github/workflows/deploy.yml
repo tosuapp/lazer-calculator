@@ -52,6 +52,7 @@ jobs:
 
       - name: Apply patches
         run: pnpm run apply-patch:prod
+        working-directory: ./lib
 
       - name: Build native module
         run: pnpm run build
