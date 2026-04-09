@@ -9,7 +9,7 @@ public readonly struct BeatmapDifficultyData
     /// <summary>
     /// The approach rate of the beatmap.
     /// </summary>
-    public float approachRate { get; init; }
+    public float ApproachRate { get; init; }
 
     /// <summary>
     /// The circle size of the beatmap.
@@ -28,7 +28,7 @@ public readonly struct BeatmapDifficultyData
 
     internal static BeatmapDifficultyData FromDifficulty(BeatmapDifficulty diff) => new()
     {
-        approachRate = diff.ApproachRate,
+        ApproachRate = diff.ApproachRate,
         CircleSize = diff.CircleSize,
         OverallDifficulty = diff.OverallDifficulty,
         DrainRate = diff.DrainRate,
