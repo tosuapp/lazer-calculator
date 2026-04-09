@@ -15,6 +15,9 @@ using tosu.pp.Data;
 
 namespace tosu.pp;
 
+/// <summary>
+/// Provides methods to simulate maximum score with specific accuracy and mods for a given beatmap.
+/// </summary>
 [JSExport]
 public static class ScoreSimulator
 {
@@ -23,7 +26,6 @@ public static class ScoreSimulator
     /// Create a score closest to given accuracy with the current beatmap and mods, but only with the first `count` hitobjects.
     /// Generated score only have hit results, accuracy and mod.
     /// </summary>
-    /// <param name="count"></param>
     public static ScoreInfoData CreatePartialScore(Beatmap beatmap, int count, string[] mods, double accuracy) => ScoreInfoData.FromScoreInfo(
         CreateScoreInfo(
             beatmap.ruleset,
@@ -67,7 +69,12 @@ public static class ScoreSimulator
 
         return new ScoreInfo(beatmap.BeatmapInfo, beatmap.BeatmapInfo.Ruleset)
         {
-            Accuracy = accuracy,
+            Accuracy = AccuracyCalculator.Calculate(
+                ruleset.RulesetInfo.OnlineID,
+                beatmap,
+                statistics,
+                modsArray
+            ),
             Mods = modsArray,
             Statistics = statistics
         };
