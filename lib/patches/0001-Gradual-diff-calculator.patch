@@ -1,7 +1,7 @@
-From 3a5534a1013ec7238440826795a324e82fe92163 Mon Sep 17 00:00:00 2001
+From b785123b3f7d25f9836d5cf329f217375ca7c3d4 Mon Sep 17 00:00:00 2001
 From: storycraft <storycraft@pancake.sh>
 Date: Sat, 4 Apr 2026 14:19:10 +0900
-Subject: [PATCH 1/5] Gradual diff calculator
+Subject: [PATCH 1/6] Gradual diff calculator
 
 ---
  .../Difficulty/DifficultyCalculator.cs        |  22 ++
@@ -10,11 +10,11 @@ Subject: [PATCH 1/5] Gradual diff calculator
  create mode 100644 osu.Game/Rulesets/Difficulty/GradualDifficultyEnumerator.cs
 
 diff --git a/osu.Game/Rulesets/Difficulty/DifficultyCalculator.cs b/osu.Game/Rulesets/Difficulty/DifficultyCalculator.cs
-index 7acfbe651f..f556c52e25 100644
+index ec94bd704b..7d355e6e1f 100644
 --- a/osu.Game/Rulesets/Difficulty/DifficultyCalculator.cs
 +++ b/osu.Game/Rulesets/Difficulty/DifficultyCalculator.cs
-@@ -91,6 +91,28 @@ public DifficultyAttributes Calculate([NotNull] IEnumerable<Mod> mods, Cancellat
-             return CreateDifficultyAttributes(Beatmap, playableMods, skills, clockRate);
+@@ -90,6 +90,28 @@ public DifficultyAttributes Calculate([NotNull] IEnumerable<Mod> mods, Cancellat
+             return CreateDifficultyAttributes(Beatmap, playableMods, skills);
          }
  
 +        public GradualDifficultyEnumerator CreateGradualDifficulty([NotNull] IEnumerable<Mod> mods, CancellationToken cancellationToken = default)
@@ -282,10 +282,10 @@ index 0000000000..8328634ac0
 2.33.0.windows.2
 
 
-From 1eab247fad8bb9eba09cea70bafc0983536b191a Mon Sep 17 00:00:00 2001
+From 22720d67a65450988ede7195a4d6bd03b5691d0b Mon Sep 17 00:00:00 2001
 From: storycraft <storycraft@pancake.sh>
 Date: Sat, 4 Apr 2026 20:57:13 +0900
-Subject: [PATCH 2/5] Split CreateDifficultyAttributes
+Subject: [PATCH 2/6] Split CreateDifficultyAttributes
 
 ---
  .../Difficulty/GradualDifficultyEnumerator.cs      | 14 ++++++++------
@@ -330,10 +330,10 @@ index 8328634ac0..f2574061f7 100644
 2.33.0.windows.2
 
 
-From 6785713cf9acdc70de0386b1dbf88a188355dfc1 Mon Sep 17 00:00:00 2001
+From 561234aea62f107e1b1191da04ae7c73f0b0953a Mon Sep 17 00:00:00 2001
 From: storycraft <storycraft@pancake.sh>
 Date: Sat, 4 Apr 2026 22:55:51 +0900
-Subject: [PATCH 3/5] Add updateDifficultyHitObjects for handling on advance
+Subject: [PATCH 3/6] Add updateDifficultyHitObjects for handling on advance
  and skip
 
 ---
@@ -425,10 +425,10 @@ index f2574061f7..3f100118e4 100644
 2.33.0.windows.2
 
 
-From 0cd8ffa1f7b49189c81ddf95a4a0fea7d8850bf5 Mon Sep 17 00:00:00 2001
+From 06d0857d06a639e1e6d86845b515d8fbe96d0923 Mon Sep 17 00:00:00 2001
 From: storycraft <storycraft@pancake.sh>
 Date: Sat, 4 Apr 2026 23:02:03 +0900
-Subject: [PATCH 4/5] Fix update by clamping to last hit object
+Subject: [PATCH 4/6] Fix update by clamping to last hit object
 
 ---
  osu.Game/Rulesets/Difficulty/GradualDifficultyEnumerator.cs | 6 +++---
@@ -456,10 +456,10 @@ index 3f100118e4..e01592e26d 100644
 2.33.0.windows.2
 
 
-From 985716c5a2283081bdd742d8ab0e1267bb88cd95 Mon Sep 17 00:00:00 2001
+From 72d11ea591ee5d4e2216466f25cddcb08b36112a Mon Sep 17 00:00:00 2001
 From: storycraft <storycraft@pancake.sh>
 Date: Thu, 9 Apr 2026 17:06:18 +0900
-Subject: [PATCH 5/5] Fix gradual last object offset
+Subject: [PATCH 5/6] Fix gradual last object offset
 
 ---
  osu.Game/Rulesets/Difficulty/GradualDifficultyEnumerator.cs | 6 +++---
@@ -483,6 +483,80 @@ index e01592e26d..f7d4286de2 100644
              while (difficultyHitObjectCursor < difficultyHitObjects.Length)
              {
                  var difficultyHitObject = difficultyHitObjects[difficultyHitObjectCursor];
+-- 
+2.33.0.windows.2
+
+
+From 236796a29aa0e8e4ad29ca8a62b611d1e0e4b13a Mon Sep 17 00:00:00 2001
+From: storycraft <storycraft@pancake.sh>
+Date: Sat, 11 Apr 2026 12:12:30 +0900
+Subject: [PATCH 6/6] Remove clockRate from gradual calc
+
+---
+ osu.Game/Rulesets/Difficulty/DifficultyCalculator.cs   |  3 +--
+ .../Rulesets/Difficulty/GradualDifficultyEnumerator.cs | 10 +++-------
+ 2 files changed, 4 insertions(+), 9 deletions(-)
+
+diff --git a/osu.Game/Rulesets/Difficulty/DifficultyCalculator.cs b/osu.Game/Rulesets/Difficulty/DifficultyCalculator.cs
+index 7d355e6e1f..94f8d68f5d 100644
+--- a/osu.Game/Rulesets/Difficulty/DifficultyCalculator.cs
++++ b/osu.Game/Rulesets/Difficulty/DifficultyCalculator.cs
+@@ -100,14 +100,13 @@ public GradualDifficultyEnumerator CreateGradualDifficulty([NotNull] IEnumerable
+             cancellationToken.ThrowIfCancellationRequested();
+             preProcess(mods, cancellationToken);
+ 
+-            var skills = CreateSkills(Beatmap, playableMods, clockRate);
++            var skills = CreateSkills(Beatmap, playableMods);
+             var difficultyObjects = getDifficultyHitObjects().ToArray();
+             return new GradualDifficultyEnumerator(
+                 Beatmap,
+                 playableMods,
+                 difficultyObjects,
+                 skills,
+-                clockRate,
+                 CreateDifficultyAttributes
+             );
+         }
+diff --git a/osu.Game/Rulesets/Difficulty/GradualDifficultyEnumerator.cs b/osu.Game/Rulesets/Difficulty/GradualDifficultyEnumerator.cs
+index f7d4286de2..d57b3b2f6c 100644
+--- a/osu.Game/Rulesets/Difficulty/GradualDifficultyEnumerator.cs
++++ b/osu.Game/Rulesets/Difficulty/GradualDifficultyEnumerator.cs
+@@ -26,9 +26,7 @@ public sealed class GradualDifficultyEnumerator
+         private readonly DifficultyHitObject[] difficultyHitObjects;
+         private int difficultyHitObjectCursor = 0;
+ 
+-        private readonly double clockRate;
+-
+-        private readonly Func<IBeatmap, Mod[], Skill[], double, DifficultyAttributes> createDifficultyAttributes;
++        private readonly Func<IBeatmap, Mod[], Skill[], DifficultyAttributes> createDifficultyAttributes;
+ 
+         public Skill[] Skills { get; }
+ 
+@@ -37,14 +35,12 @@ public sealed class GradualDifficultyEnumerator
+             Mod[] mods,
+             DifficultyHitObject[] difficultyHitObjects,
+             Skill[] skills,
+-            double clockRate,
+-            Func<IBeatmap, Mod[], Skill[], double, DifficultyAttributes> createDifficultyAttributes)
++            Func<IBeatmap, Mod[], Skill[], DifficultyAttributes> createDifficultyAttributes)
+         {
+             this.beatmap = beatmap;
+             progressiveBeatmap = new ProgressiveCalculationBeatmap(beatmap);
+             this.mods = mods;
+             this.difficultyHitObjects = difficultyHitObjects;
+-            this.clockRate = clockRate;
+             this.createDifficultyAttributes = createDifficultyAttributes;
+             Skills = skills;
+         }
+@@ -74,7 +70,7 @@ private void updateDifficultyHitObjects(CancellationToken cancellationToken)
+ 
+         public DifficultyAttributes CreateDifficultyAttributes()
+         {
+-            return createDifficultyAttributes(progressiveBeatmap, mods, Skills, clockRate);
++            return createDifficultyAttributes(progressiveBeatmap, mods, Skills);
+         }
+ 
+         public bool Advance(CancellationToken cancellationToken = default)
 -- 
 2.33.0.windows.2
 

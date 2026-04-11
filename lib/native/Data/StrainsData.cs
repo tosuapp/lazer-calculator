@@ -20,10 +20,13 @@ public struct StrainsData
     public Memory<double> Speed { get; set; }
     #endregion
 
+    #region osu! and osu!taiko
+    public Memory<double> Reading { get; set; }
+    #endregion
+
     #region osu!taiko
     public Memory<double> Color { get; set; }
     public Memory<double> Rhythm { get; set; }
-    public Memory<double> Reading { get; set; }
     public Memory<double> Stamina { get; set; }
     #endregion
 
@@ -35,9 +38,9 @@ public struct StrainsData
     public Memory<double> Strains { get; set; }
     #endregion
 
-    private void SetStrains(StrainSkill skill)
+    private void SetStrains(Skill skill)
     {
-        var strains = skill.GetObjectStrains().ToArray();
+        var strains = skill.GetObjectDifficulties().ToArray();
         switch (skill)
         {
             case Aim aim:
@@ -50,6 +53,9 @@ public struct StrainsData
                     AimWithoutSliders = strains;
                 }
                 break;
+            case osu.Game.Rulesets.Osu.Difficulty.Skills.Reading _:
+                Reading = strains;
+                break;
             case Flashlight _:
                 Flashlight = strains;
                 break;
@@ -59,7 +65,7 @@ public struct StrainsData
             case Colour _:
                 Color = strains;
                 break;
-            case Reading _:
+            case osu.Game.Rulesets.Taiko.Difficulty.Skills.Reading _:
                 Reading = strains;
                 break;
             case Rhythm _:
