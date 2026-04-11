@@ -88,10 +88,7 @@ public struct StrainsData
         var data = new StrainsData();
         foreach (var skill in skills)
         {
-            if (skill is StrainSkill strainSkill)
-            {
-                data.SetStrains(strainSkill);
-            }
+            data.SetStrains(skill);
         }
 
         return data;
