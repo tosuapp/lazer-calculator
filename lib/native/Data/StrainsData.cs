@@ -20,10 +20,13 @@ public struct StrainsData
     public PeakStrains Speed { get; set; }
     #endregion
 
+    #region osu! and osu!taiko
+    public PeakStrains Reading { get; set; }
+    #endregion
+
     #region osu!taiko
     public PeakStrains Color { get; set; }
     public PeakStrains Rhythm { get; set; }
-    public PeakStrains Reading { get; set; }
     public PeakStrains Stamina { get; set; }
     #endregion
 
@@ -37,9 +40,9 @@ public struct StrainsData
 
     // current strain section length is hardcoded to match with current impl because StrainSkill SectionLength is protected.
     // TODO:: use SectionLength value from StrainSkill.
-    private void SetStrains(StrainSkill skill)
+    private void SetStrains(Skill skill)
     {
-        var strains = skill.GetCurrentStrainPeaks().ToArray();
+        var strains = skill.GetObjectDifficulties().ToArray();
         switch (skill)
         {
             case Aim aim:
@@ -52,6 +55,9 @@ public struct StrainsData
                     AimWithoutSliders = new PeakStrains(strains, 400);
                 }
                 break;
+            case osu.Game.Rulesets.Osu.Difficulty.Skills.Reading _:
+                Reading = strains;
+                break;
             case Flashlight _:
                 Flashlight = new PeakStrains(strains, 400);
                 break;
@@ -61,8 +67,8 @@ public struct StrainsData
             case Colour _:
                 Color = new PeakStrains(strains, 400);
                 break;
-            case Reading _:
-                Reading = new PeakStrains(strains, 400);
+            case osu.Game.Rulesets.Taiko.Difficulty.Skills.Reading _:
+                Reading = strains;
                 break;
             case Rhythm _:
                 Rhythm = new PeakStrains(strains, 400);
