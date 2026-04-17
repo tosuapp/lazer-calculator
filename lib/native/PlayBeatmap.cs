@@ -87,7 +87,7 @@ public class PlayBeatmap
     /// <summary>
     /// Create gradual difficulty calculator with current mods applied.
     /// </summary>
-    public GradualDifficulty CreateGradualDifficultyCalculator()
+    public GradualDifficulty CreateGradualDifficulty()
     {
         return new GradualDifficulty(
             ruleset.CreateDifficultyCalculator(new DiffWorkingBeatmap(inner)).CreateGradualDifficulty(Mods)
