@@ -1,4 +1,4 @@
-From 3a5534a1013ec7238440826795a324e82fe92163 Mon Sep 17 00:00:00 2001
+From b1ec4263224cb6322207d7acc79596dfd4181198 Mon Sep 17 00:00:00 2001
 From: storycraft <storycraft@pancake.sh>
 Date: Sat, 4 Apr 2026 14:19:10 +0900
 Subject: [PATCH 1/5] Gradual diff calculator
@@ -282,7 +282,7 @@ index 0000000000..8328634ac0
 2.33.0.windows.2
 
 
-From 1eab247fad8bb9eba09cea70bafc0983536b191a Mon Sep 17 00:00:00 2001
+From a8bde5d90635cee258213a8335a9d5a579b0af97 Mon Sep 17 00:00:00 2001
 From: storycraft <storycraft@pancake.sh>
 Date: Sat, 4 Apr 2026 20:57:13 +0900
 Subject: [PATCH 2/5] Split CreateDifficultyAttributes
@@ -330,7 +330,7 @@ index 8328634ac0..f2574061f7 100644
 2.33.0.windows.2
 
 
-From 6785713cf9acdc70de0386b1dbf88a188355dfc1 Mon Sep 17 00:00:00 2001
+From e102345bf91a532df5afd0abcc02acb47eb3765d Mon Sep 17 00:00:00 2001
 From: storycraft <storycraft@pancake.sh>
 Date: Sat, 4 Apr 2026 22:55:51 +0900
 Subject: [PATCH 3/5] Add updateDifficultyHitObjects for handling on advance
@@ -425,7 +425,7 @@ index f2574061f7..3f100118e4 100644
 2.33.0.windows.2
 
 
-From 0cd8ffa1f7b49189c81ddf95a4a0fea7d8850bf5 Mon Sep 17 00:00:00 2001
+From bed9ef90adb5e457c23e5cdc4545253f20421e2b Mon Sep 17 00:00:00 2001
 From: storycraft <storycraft@pancake.sh>
 Date: Sat, 4 Apr 2026 23:02:03 +0900
 Subject: [PATCH 4/5] Fix update by clamping to last hit object
@@ -456,7 +456,7 @@ index 3f100118e4..e01592e26d 100644
 2.33.0.windows.2
 
 
-From 985716c5a2283081bdd742d8ab0e1267bb88cd95 Mon Sep 17 00:00:00 2001
+From 9c527d2738b7dd7d5811438e76b62302ce685362 Mon Sep 17 00:00:00 2001
 From: storycraft <storycraft@pancake.sh>
 Date: Thu, 9 Apr 2026 17:06:18 +0900
 Subject: [PATCH 5/5] Fix gradual last object offset
