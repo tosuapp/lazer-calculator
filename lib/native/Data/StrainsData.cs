@@ -37,7 +37,7 @@ public struct StrainsData
 
     private void SetStrains(StrainSkill skill)
     {
-        var strains = skill.GetObjectStrains().ToArray();
+        var strains = skill.GetCurrentStrainPeaks().ToArray();
         switch (skill)
         {
             case Aim aim:
