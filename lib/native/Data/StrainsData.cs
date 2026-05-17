@@ -14,27 +14,29 @@ namespace binding.Data;
 public struct StrainsData
 {
     #region osu!
-    public Memory<double> Aim { get; set; }
-    public Memory<double> AimWithoutSliders { get; set; }
-    public Memory<double> Flashlight { get; set; }
-    public Memory<double> Speed { get; set; }
+    public PeakStrains Aim { get; set; }
+    public PeakStrains AimWithoutSliders { get; set; }
+    public PeakStrains Flashlight { get; set; }
+    public PeakStrains Speed { get; set; }
     #endregion
 
     #region osu!taiko
-    public Memory<double> Color { get; set; }
-    public Memory<double> Rhythm { get; set; }
-    public Memory<double> Reading { get; set; }
-    public Memory<double> Stamina { get; set; }
+    public PeakStrains Color { get; set; }
+    public PeakStrains Rhythm { get; set; }
+    public PeakStrains Reading { get; set; }
+    public PeakStrains Stamina { get; set; }
     #endregion
 
     #region osu!catch
-    public Memory<double> Movement { get; set; }
+    public PeakStrains Movement { get; set; }
     #endregion
 
     #region osu!mania
-    public Memory<double> Strains { get; set; }
+    public PeakStrains Strains { get; set; }
     #endregion
 
+    // current strain section length is hardcoded to match with current impl because StrainSkill SectionLength is protected.
+    // TODO:: use SectionLength value from StrainSkill.
     private void SetStrains(StrainSkill skill)
     {
         var strains = skill.GetCurrentStrainPeaks().ToArray();
@@ -43,36 +45,36 @@ public struct StrainsData
             case Aim aim:
                 if (aim.IncludeSliders)
                 {
-                    Aim = strains;
+                    Aim = new PeakStrains(strains, 400);
                 }
                 else
                 {
-                    AimWithoutSliders = strains;
+                    AimWithoutSliders = new PeakStrains(strains, 400);
                 }
                 break;
             case Flashlight _:
-                Flashlight = strains;
+                Flashlight = new PeakStrains(strains, 400);
                 break;
             case Speed _:
-                Speed = strains;
+                Speed = new PeakStrains(strains, 400);
                 break;
             case Colour _:
-                Color = strains;
+                Color = new PeakStrains(strains, 400);
                 break;
             case Reading _:
-                Reading = strains;
+                Reading = new PeakStrains(strains, 400);
                 break;
             case Rhythm _:
-                Rhythm = strains;
+                Rhythm = new PeakStrains(strains, 400);
                 break;
             case Stamina _:
-                Stamina = strains;
+                Stamina = new PeakStrains(strains, 400);
                 break;
             case Movement _:
-                Movement = strains;
+                Movement = new PeakStrains(strains, 750);
                 break;
             case Strain _:
-                Strains = strains;
+                Strains = new PeakStrains(strains, 400);
                 break;
         }
     }
