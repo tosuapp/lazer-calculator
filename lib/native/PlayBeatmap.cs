@@ -123,7 +123,7 @@ public class PlayBeatmap
     public string EncodeToLegacyOsu()
     {
         using var writer = new StringWriter();
-        new LegacyBeatmapEncoder(inner, null).Encode(writer);
+        new LegacyBeatmapEncoder(inner, null, null).Encode(writer);
         return writer.ToString();
     }
 
