@@ -1,6 +1,6 @@
 {
   "name": "@tosuapp/lazer-calculator",
-  "version": "0.1.0",
+  "version": "0.1.0-pre",
   "description": "AOT lazer pp calculator and utility wrapper for nodejs",
   "author": "storycraft <storycraft@pancake.sh>",
   "main": "native/dist/binding.node",
