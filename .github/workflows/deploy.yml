@@ -48,10 +48,10 @@ jobs:
         run: cp lib/native/dist/binding.node prebuilts/${{ matrix.platform.name }} && cp lib/native/dist/binding.d.ts prebuilts/${{ matrix.platform.name }}
 
       - name: Pack package
-        run: pnpm pack --filter @tosu/pp-${{ matrix.platform.name }} --out prebuilt.tgz
+        run: pnpm pack --filter @tosu/lazer-calculator-${{ matrix.platform.name }} --out prebuilt.tgz
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: "tosu-lazer-pp-${{ matrix.platform.name }}"
+          name: "tosu-lazer-calculator-${{ matrix.platform.name }}"
           path: prebuilt.tgz
