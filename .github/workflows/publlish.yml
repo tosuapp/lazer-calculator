@@ -22,7 +22,7 @@ on:
           - patch
           - release
       dist-tag:
-        description: Npm dist tag.
+        description: Npm dist tag
         required: true
         default: latest
       execute:
@@ -88,6 +88,10 @@ jobs:
           NPM_CONFIG_DRY_RUN: ${{ !inputs.execute && 'true' || 'false' }}
           NPM_CONFIG_PROVENANCE: true
           NPM_CONFIG_TAG: ${{ inputs['dist-tag'] }}
+
+      - name: Push release tag and commit
+        if: ${{ inputs.execute }}
+        run: git tag "v${{ steps.bump.outputs.version }}" && git push origin HEAD --tags
 
       - name: Release
         if: ${{ inputs.execute }}
