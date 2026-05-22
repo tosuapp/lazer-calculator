@@ -9,8 +9,9 @@ on:
         required: true
         default: https://github.com/ppy/osu
       ref:
-        description: Pattern to resolve ref(Branch or commit id or tag) to pin osu!. Default to HEAD.
-        required: false
+        description: Ref pattern(branch or commit id or tag) for pinning osu! repo.
+        required: true
+        default: master
 
 concurrency:
   group: deploy-${{ github.ref_name }}
