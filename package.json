@@ -3,14 +3,15 @@
   "private": true,
   "scripts": {
     "create-patch": "git -C lib/vendor format-patch -m @{u}..HEAD --stdout > ./patches/0001-Gradual-diff-calculator.patch",
+    "set-vendor": "tsx ./scripts/set-vendor.mts",
     "build": "pnpm --filter @tosu/pp build"
   },
   "dependencies": {
-    "@npmcli/git": "^8.0.0",
     "@npmcli/package-json": "^7.0.5"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
+    "@types/npmcli__package-json": "^4.0.4",
     "tsx": "^4.22.3"
   },
   "packageManager": "pnpm@10.28.0+sha512.05df71d1421f21399e053fde567cea34d446fa02c76571441bfc1c7956e98e363088982d940465fd34480d4d90a0668bc12362f8aa88000a64e83d0b0e47be48"

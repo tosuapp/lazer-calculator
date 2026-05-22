@@ -7,11 +7,10 @@ on:
       osu:
         description: Github repo to osu!
         required: true
-        default: ppy/osu
+        default: https://github.com/ppy/osu
       ref:
-        description: Branch or tag to fetch osu!
-        required: true
-        default: master
+        description: Pattern to resolve ref(Branch or commit id or tag) to pin osu!. Default to HEAD.
+        required: false
 
 concurrency:
   group: deploy-${{ github.ref_name }}
@@ -21,38 +20,39 @@ jobs:
   deploy:
     strategy:
       matrix:
-        platform: [
-          { ci: 'windows-latest', name: 'win32-x64' },
-          { ci: 'ubuntu-latest', name: 'linux-x64' }
-        ]
+        platform:
+          [
+            { ci: "windows-latest", name: "win32-x64" },
+            { ci: "ubuntu-latest", name: "linux-x64" },
+          ]
     runs-on: ${{ matrix.platform.ci }}
     environment: deploy
     steps:
+      - name: Setup ci
+        run: |
+          git config --global user.name "Github Actions"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
       - uses: actions/checkout@v6
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 22.x
-          registry-url: 'https://registry.npmjs.org'
-          cache: 'pnpm'
+          node-version: 24.x
+          registry-url: "https://registry.npmjs.org"
+          cache: "pnpm"
 
-      - name: Install dependencies
-        run: pnpm install --ignore-scripts
-    
-      - name: Fetch osu
-        uses: actions/checkout@v6
-        with:
-          repository: ${{ inputs.osu }}
-          ref: ${{ inputs.ref }}
-          path: ./lib/vendor
+      - name: Update osu! vendor settings
+        run: pnpm set-vendor
+        env:
+          VENDOR_REPOSITORY: ${{ inputs.osu }}
+          VENDOR_REVISION: ${{ inputs.ref }}
 
-      - name: Apply patches
-        run: pnpm run apply-patch:prod
-        working-directory: ./lib
+      - name: Install dependencies and run postinstall
+        run: pnpm install
 
       - name: Build native module
         run: pnpm run build
@@ -66,5 +66,5 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: 'tosu-lazer-pp-${{ matrix.platform.name }}'
+          name: "tosu-lazer-pp-${{ matrix.platform.name }}"
           path: prebuilt.tgz
