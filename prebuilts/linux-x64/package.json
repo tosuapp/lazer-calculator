@@ -1,6 +1,6 @@
 {
   "name": "@tosuapp/lazer-calculator-linux-x64",
-  "version": "0.1.0-20260522.0",
+  "version": "0.1.0-20260522.1",
   "description": "Prebuilt AOT lazer pp calculator for tosu",
   "author": "storycraft <storycraft@pancake.sh>",
   "license": "LGPL-3.0-only",
