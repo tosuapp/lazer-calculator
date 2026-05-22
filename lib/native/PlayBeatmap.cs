@@ -11,7 +11,6 @@ using binding.Data;
 using binding.Internal;
 using Decoder = osu.Game.Beatmaps.Formats.Decoder;
 using OsuBeatmap = osu.Game.Beatmaps.Beatmap;
-using osu.Game.Beatmaps.Formats;
 
 namespace binding;
 
@@ -115,16 +114,6 @@ public class PlayBeatmap
                 attrs.Inner
             )
         );
-    }
-
-    /// <summary>
-    /// Encode beatmap back to legacy .osu format string.
-    /// </summary>
-    public string EncodeToLegacyOsu()
-    {
-        using var writer = new StringWriter();
-        new LegacyBeatmapEncoder(inner, null, null).Encode(writer);
-        return writer.ToString();
     }
 
     /// <summary>
