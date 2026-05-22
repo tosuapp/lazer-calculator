@@ -1,11 +1,12 @@
 {
-  "name": "@tosu/pp",
+  "name": "@tosu/lazer-calculator",
   "version": "0.1.0",
   "description": "AOT lazer pp calculator and utility wrapper for nodejs",
   "author": "storycraft <storycraft@pancake.sh>", 
   "private": true,
   "main": "native/dist/binding.node",
   "types": "native/dist/binding.d.ts",
+  "repository": "github:tosuapp/lazer-calculator",
   "scripts": {
     "postinstall": "npm run clone-default-osu:prod && npm run apply-patch:prod && npm run build",
     "setup-dev": "npm run clone-default-osu && npm run apply-patch",
