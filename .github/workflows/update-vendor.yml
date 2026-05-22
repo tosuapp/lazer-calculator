@@ -1,0 +1,55 @@
+name: update-vendor
+
+on:
+  workflow_dispatch:
+    inputs:
+      osu:
+        description: Github repo to osu!
+        required: true
+        default: https://github.com/ppy/osu
+      ref:
+        description: Ref pattern(branch or commit id or tag) for pinning osu! repo.
+        required: true
+        default: master
+
+concurrency:
+  group: update-vendor-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  update-vendor:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Setup ci
+        run: |
+          git config --global user.name "Github Actions"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+          registry-url: "https://registry.npmjs.org"
+          cache: "pnpm"
+
+      - name: Install workspace dependencies
+        run: pnpm install --filter .
+
+      - name: Update osu! vendor settings
+        run: pnpm set-vendor
+        env:
+          VENDOR_REPOSITORY: ${{ inputs.osu }}
+          VENDOR_REVISION: ${{ inputs.ref }}
+
+      - name: Create update commit
+        run: |
+          git add .
+          git commit -m "chore: update vendor settings" -m "Repository: ${{ inputs.osu }}@${{ inputs.ref }}"
+          git push origin HEAD

@@ -3,14 +3,6 @@ name: publish
 on:
   workflow_dispatch:
     inputs:
-      osu:
-        description: Github repo to osu!
-        required: true
-        default: https://github.com/ppy/osu
-      ref:
-        description: Ref pattern(branch or commit id or tag) for pinning osu! repo.
-        required: true
-        default: master
       level:
         type: choice
         description: Bump level
@@ -58,12 +50,6 @@ jobs:
 
       - name: Install workspace dependencies
         run: pnpm install --filter .
-
-      - name: Update osu! vendor settings
-        run: pnpm set-vendor
-        env:
-          VENDOR_REPOSITORY: ${{ inputs.osu }}
-          VENDOR_REVISION: ${{ inputs.ref }}
 
       - name: Bump version
         id: bump
