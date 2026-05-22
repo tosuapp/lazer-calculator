@@ -22,7 +22,7 @@ on:
           - patch
           - release
       dist-tag:
-        description: (optional) Dist tag to publish to npm, default to "latest".
+        description: Npm dist tag.
         required: true
         default: latest
       execute:
@@ -69,12 +69,12 @@ jobs:
       - name: Bump version
         id: bump
         run: |
-          OUTPUT=$(pnpm --filter @tosuapp/lazer-calculator exec npm version pre${{ inputs.level }})
+          # Bump version and add prelease tag with YYYYMMDD format
+          OUTPUT=$(pnpm --filter @tosuapp/lazer-calculator exec npm version pre${{ inputs.level }} --preid=$(date +\%Y\%m\%d))
           # Set prebuilt packages version
           pnpm --filter @tosuapp/lazer-calculator-* exec npm version ${OUTPUT:1}
           echo "version=${OUTPUT:1}" >> $GITHUB_OUTPUT
         env:
-          NPM_CONFIG_PREID: ''
           NPM_CONFIG_GIT_TAG_VERSION: false
 
       - name: Create release commit
