@@ -2,7 +2,7 @@
   "author": "storycraft <storycraft@pancake.sh>",
   "private": true,
   "scripts": {
-    "create-patch": "git -C lib/vendor format-patch -m @{u}..HEAD --stdout > ./patches/0001-Gradual-diff-calculator.patch",
+    "create-patch": "git -C lib/vendor format-patch -m @{u}..HEAD --stdout > ./lib/patches/0001-Gradual-diff-calculator.patch",
     "set-vendor": "tsx ./scripts/set-vendor.mts",
     "build": "pnpm -r build"
   },
