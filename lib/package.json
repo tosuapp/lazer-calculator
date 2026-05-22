@@ -8,7 +8,7 @@
   "types": "native/dist/binding.d.ts",
   "repository": "github:tosuapp/lazer-calculator",
   "scripts": {
-    "postinstall": "node postinstall.mjs",
+    "postinstall": "node postinstall.mjs && npm run build",
     "build": "dotnet publish native --ucr"
   },
   "devDependencies": {
@@ -16,6 +16,6 @@
   },
   "osu": {
     "repository": "https://github.com/ppy/osu",
-    "revision": "c73af24bbc9708e2ddf02f318e7328d1f948a49b"
+    "revision": "f5c70679f5acd6e90d99ec8501c9e171dbc4c90e"
   }
 }
