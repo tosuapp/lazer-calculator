@@ -8,16 +8,14 @@
   "types": "native/dist/binding.d.ts",
   "repository": "github:tosuapp/lazer-calculator",
   "scripts": {
-    "postinstall": "npm run clone-default-osu:prod && npm run apply-patch:prod && npm run build",
-    "setup-dev": "npm run clone-default-osu && npm run apply-patch",
-    "clone-default-osu": "git clone --branch master https://github.com/ppy/osu vendor",
-    "clone-default-osu:prod": "git clone --depth 1 --branch master https://github.com/ppy/osu vendor",
-    "create-patch": "git -C vendor format-patch -m @{u}..HEAD --stdout > ./patches/0001-Gradual-diff-calculator.patch",
-    "apply-patch": "git -C vendor am --whitespace=fix -3 ../patches/0001-Gradual-diff-calculator.patch",
-    "apply-patch:prod": "git -C vendor apply --whitespace=fix -C0 -3 ../patches/0001-Gradual-diff-calculator.patch",
+    "postinstall": "node postinstall.mjs",
     "build": "dotnet publish native --ucr"
   },
   "devDependencies": {
     "node-api-dotnet": "^0.9.19"
+  },
+  "osu": {
+    "repository": "https://github.com/ppy/osu",
+    "revision": "2026.518.0"
   }
 }
