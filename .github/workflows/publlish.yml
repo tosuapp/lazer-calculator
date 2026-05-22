@@ -1,0 +1,94 @@
+name: publish
+
+on:
+  workflow_call:
+  workflow_dispatch:
+    inputs:
+      osu:
+        description: Github repo to osu!
+        required: true
+        default: https://github.com/ppy/osu
+      ref:
+        description: Ref pattern(branch or commit id or tag) for pinning osu! repo.
+        required: true
+        default: master
+      level:
+        type: choice
+        description: Bump level
+        default: release
+        options:
+          - major
+          - minor
+          - patch
+          - release
+      dist-tag:
+        description: (optional) Dist tag to publish to npm, default to "latest".
+        required: true
+        default: latest
+      execute:
+        type: boolean
+        description: Actually publish (not dry run)
+
+concurrency:
+  group: publish-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Setup ci
+        run: |
+          git config --global user.name "Github Actions"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+          registry-url: "https://registry.npmjs.org"
+          cache: "pnpm"
+
+      - name: Install workspace dependencies
+        run: pnpm install --filter .
+
+      - name: Update osu! vendor settings
+        run: pnpm set-vendor
+        env:
+          VENDOR_REPOSITORY: ${{ inputs.osu }}
+          VENDOR_REVISION: ${{ inputs.ref }}
+
+      - name: Bump version
+        id: bump
+        run: |
+          OUTPUT=$(pnpm version -r pre${{ inputs.level }} -m "Bump version to %s")
+          echo "version=${OUTPUT:1}" >> $GITHUB_OUTPUT
+        env:
+          NPM_PREID: ''
+          NPM_GIT_TAG_VERSION: false
+
+      - name: Publish to npm
+        run: pnpm publish --filter @tosu/lazer-calculator --access public
+        env:
+          NPM_DRY-RUN: ${{ !inputs.execute && 'true' || 'false' }}
+          NPM_CONFIG_PROVENANCE: true
+          NPM_TAG: ${{ inputs['dist-tag'] }}
+
+      - name: Release
+        if: ${{ inputs.execute }}
+        uses: softprops/action-gh-release@v2
+        with:
+          name: 'v${{ steps.bump.outputs.version }}'
+          draft: false
+          generate_release_notes: true
+          make_latest: true
+          tag_name: "v${{ steps.bump.outputs.version }}"
+          target_commitish: '${{ github.ref }}'
