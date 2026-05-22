@@ -72,15 +72,15 @@ jobs:
           OUTPUT=$(pnpm version -r pre${{ inputs.level }} -m "Bump version to %s")
           echo "version=${OUTPUT:1}" >> $GITHUB_OUTPUT
         env:
-          NPM_PREID: ''
-          NPM_GIT_TAG_VERSION: false
+          NPM_CONFIG_PREID: ''
+          NPM_CONFIG_GIT_TAG_VERSION: false
 
       - name: Publish to npm
-        run: pnpm publish --filter @tosu/lazer-calculator --access public
+        run: pnpm publish --filter @tosuapp/lazer-calculator --access public
         env:
-          NPM_DRY-RUN: ${{ !inputs.execute && 'true' || 'false' }}
+          NPM_CONFIG_DRY_RUN: ${{ !inputs.execute && 'true' || 'false' }}
           NPM_CONFIG_PROVENANCE: true
-          NPM_TAG: ${{ inputs['dist-tag'] }}
+          NPM_CONFIG_TAG: ${{ inputs['dist-tag'] }}
 
       - name: Release
         if: ${{ inputs.execute }}
