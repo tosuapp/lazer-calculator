@@ -4,7 +4,6 @@
 import PackageJson from '@npmcli/package-json';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
-import { convertProcessSignalToExitCode } from 'node:util';
 
 const packageJson = await PackageJson.load('./lib');
 
@@ -28,11 +27,10 @@ async function resolveRef(repo: string, ref: string): Promise<string> {
     let output = '';
     p.stdout.setEncoding('utf-8');
     p.stdout.on('data', (data) => output += data);
-    
+
     const [code, signal] = await once(p, 'close');
-    const exitCode = code ?? convertProcessSignalToExitCode(signal);
-    if (exitCode !== 0) {
-        throw new Error(`resolveRef exited with code ${exitCode}`);
+    if (code !== 0) {
+        throw new Error(`resolveRef exited with code ${code ?? signal}`);
     }
 
     // Return the commit hash from the output, or the original ref if not found
