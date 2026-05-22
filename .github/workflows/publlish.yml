@@ -69,11 +69,18 @@ jobs:
       - name: Bump version
         id: bump
         run: |
-          OUTPUT=$(pnpm version -r pre${{ inputs.level }} -m "Bump version to %s")
+          OUTPUT=$(pnpm --filter @tosuapp/lazer-calculator exec npm version pre${{ inputs.level }})
+          # Set prebuilt packages version
+          pnpm --filter @tosuapp/lazer-calculator-* exec npm version ${OUTPUT:1}
           echo "version=${OUTPUT:1}" >> $GITHUB_OUTPUT
         env:
           NPM_CONFIG_PREID: ''
           NPM_CONFIG_GIT_TAG_VERSION: false
+
+      - name: Create release commit
+        run: |
+          git add .
+          git commit -m "chore: release v${{ steps.bump.outputs.version }}"
 
       - name: Publish to npm
         run: pnpm publish --filter @tosuapp/lazer-calculator --access public
