@@ -4,7 +4,7 @@
   "scripts": {
     "create-patch": "git -C lib/vendor format-patch -m @{u}..HEAD --stdout > ./patches/0001-Gradual-diff-calculator.patch",
     "set-vendor": "tsx ./scripts/set-vendor.mts",
-    "build": "pnpm --filter @tosu/pp build"
+    "build": "pnpm -r build"
   },
   "dependencies": {
     "@npmcli/package-json": "^7.0.5"
