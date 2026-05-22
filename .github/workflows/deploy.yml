@@ -46,6 +46,9 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           cache: "pnpm"
 
+      - name: Install workspace dependencies
+        run: pnpm install --filter .
+
       - name: Update osu! vendor settings
         run: pnpm set-vendor
         env:
@@ -53,7 +56,7 @@ jobs:
           VENDOR_REVISION: ${{ inputs.ref }}
 
       - name: Install dependencies and run postinstall
-        run: pnpm install
+        run: pnpm -r install
 
       - name: Build native module
         run: pnpm run build
