@@ -1,6 +1,6 @@
 {
   "name": "@tosuapp/lazer-calculator",
-  "version": "0.1.0-20260522.1",
+  "version": "0.1.0-20260522.2",
   "description": "AOT lazer pp calculator and utility wrapper for nodejs",
   "author": "storycraft <storycraft@pancake.sh>",
   "license": "LGPL-3.0-only",
@@ -16,6 +16,6 @@
   },
   "osu": {
     "repository": "https://github.com/ppy/osu",
-    "revision": "f5c70679f5acd6e90d99ec8501c9e171dbc4c90e"
+    "revision": "21938eea960d357ae87de3de3a347a55a423ef51"
   }
 }
