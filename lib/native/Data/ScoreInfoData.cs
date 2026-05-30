@@ -11,6 +11,8 @@ public readonly struct ScoreInfoData
 {
     public required long TotalScore { get; init; }
 
+    public required bool IsLegacyScore { get; init; }
+
     public required double Accuracy { get; init; }
 
     public required int MaxCombo { get; init; }
@@ -52,21 +54,31 @@ public readonly struct ScoreInfoData
         [HitResult.Miss] = Misses,
     };
 
-    internal ScoreInfo ToPerformanceScoreInfo(PlayBeatmap beatmap, Ruleset ruleset) => new(beatmap.inner.BeatmapInfo, ruleset.RulesetInfo)
+    internal ScoreInfo ToPerformanceScoreInfo(PlayBeatmap beatmap, Ruleset ruleset)
     {
-        TotalScore = TotalScore,
-        LegacyTotalScore = TotalScore,
-        Mods = beatmap.Mods,
-        MaxCombo = MaxCombo,
-        Accuracy = Accuracy,
-        Statistics = CreateStatistics(),
-    };
+        ScoreInfo info = new(beatmap.inner.BeatmapInfo, ruleset.RulesetInfo)
+        {
+            TotalScore = TotalScore,
+            Mods = beatmap.Mods,
+            MaxCombo = MaxCombo,
+            Accuracy = Accuracy,
+            Statistics = CreateStatistics(),
+        };
+        if (IsLegacyScore)
+        {
+            info.IsLegacyScore = true;
+            info.LegacyTotalScore = TotalScore;
+        }
+
+        return info;
+    }
 
     internal static ScoreInfoData FromScoreInfo(ScoreInfo info)
     {
         return new ScoreInfoData
         {
             TotalScore = info.TotalScore,
+            IsLegacyScore = info.IsLegacyScore,
             Accuracy = info.Accuracy,
             MaxCombo = info.MaxCombo,
             SliderEndHits = info.Statistics.GetValueOrDefault(HitResult.SliderTailHit),
