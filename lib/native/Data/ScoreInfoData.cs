@@ -11,7 +11,7 @@ public readonly struct ScoreInfoData
 {
     public required long TotalScore { get; init; }
 
-    public required bool LegacyScore { get; init; }
+    public required bool IsLegacyScore { get; init; }
 
     public required double Accuracy { get; init; }
 
@@ -64,7 +64,7 @@ public readonly struct ScoreInfoData
             Accuracy = Accuracy,
             Statistics = CreateStatistics(),
         };
-        if (LegacyScore)
+        if (IsLegacyScore)
         {
             info.IsLegacyScore = true;
             info.LegacyTotalScore = TotalScore;
@@ -78,7 +78,7 @@ public readonly struct ScoreInfoData
         return new ScoreInfoData
         {
             TotalScore = info.TotalScore,
-            LegacyScore = info.IsLegacyScore,
+            IsLegacyScore = info.IsLegacyScore,
             Accuracy = info.Accuracy,
             MaxCombo = info.MaxCombo,
             SliderEndHits = info.Statistics.GetValueOrDefault(HitResult.SliderTailHit),
