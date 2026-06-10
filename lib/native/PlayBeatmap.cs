@@ -31,9 +31,9 @@ public class PlayBeatmap
     /// </summary>
     public int Mode => ruleset.RulesetInfo.OnlineID;
 
-    private PlayBeatmap(FlatWorkingBeatmap rawWorkingBeatmap, Ruleset ruleset)
+    private PlayBeatmap(FlatWorkingBeatmap workingBeatmap, Ruleset ruleset)
     {
-        this.workingBeatmap = rawWorkingBeatmap;
+        this.workingBeatmap = workingBeatmap;
         this.ruleset = ruleset;
         Mods = [];
     }
