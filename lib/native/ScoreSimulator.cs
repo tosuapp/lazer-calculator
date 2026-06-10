@@ -31,7 +31,7 @@ public static class ScoreSimulator
             beatmap.ruleset,
             new Beatmap()
             {
-                HitObjects = [.. beatmap.inner.HitObjects.Take(count)]
+                HitObjects = [.. beatmap.GetPlayableBeatmap().HitObjects.Take(count)]
             },
             beatmap.Mods,
             accuracy
@@ -43,7 +43,7 @@ public static class ScoreSimulator
     /// Generated score only have hit results, accuracy.
     /// </summary>
     public static ScoreInfoData CreateScore(PlayBeatmap beatmap, double accuracy) =>
-        ScoreInfoData.FromScoreInfo(CreateScoreInfo(beatmap.ruleset, beatmap.inner, beatmap.Mods, accuracy));
+        ScoreInfoData.FromScoreInfo(CreateScoreInfo(beatmap.ruleset, beatmap.GetPlayableBeatmap(), beatmap.Mods, accuracy));
 
     private static ScoreInfo CreateScoreInfo(Ruleset ruleset, IBeatmap beatmap, Mod[] mods, double accuracy)
     {
