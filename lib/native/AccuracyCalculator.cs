@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using binding.Data;
 using Microsoft.JavaScript.NodeApi;
@@ -26,7 +25,7 @@ public static class AccuracyCalculator
         var info = score.ToPerformanceScoreInfo(beatmap, beatmap.ruleset);
         return Calculate(
             beatmap.ruleset.RulesetInfo.OnlineID,
-            beatmap.inner,
+            beatmap.GetPlayableBeatmap(),
             info.Statistics,
             info.Mods
         );

@@ -56,7 +56,10 @@ public readonly struct ScoreInfoData
 
     internal ScoreInfo ToPerformanceScoreInfo(PlayBeatmap beatmap, Ruleset ruleset)
     {
-        ScoreInfo info = new(beatmap.inner.BeatmapInfo, ruleset.RulesetInfo)
+        ScoreInfo info = new(
+            beatmap.GetPlayableBeatmap().BeatmapInfo,
+            ruleset.RulesetInfo
+        )
         {
             TotalScore = TotalScore,
             Mods = beatmap.Mods,
@@ -64,12 +67,12 @@ public readonly struct ScoreInfoData
             Accuracy = Accuracy,
             Statistics = CreateStatistics(),
         };
+
         if (IsLegacyScore)
         {
             info.IsLegacyScore = true;
             info.LegacyTotalScore = TotalScore;
         }
-
         return info;
     }
 

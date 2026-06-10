@@ -10,7 +10,7 @@ using osu.Game.Rulesets.Mods;
 using binding.Data;
 using binding.Internal;
 using Decoder = osu.Game.Beatmaps.Formats.Decoder;
-using OsuBeatmap = osu.Game.Beatmaps.Beatmap;
+using System.Threading;
 
 namespace binding;
 
@@ -20,19 +20,20 @@ namespace binding;
 [JSExport]
 public class PlayBeatmap
 {
-    internal readonly IBeatmap inner;
+    private readonly FlatWorkingBeatmap workingBeatmap;
+
     internal readonly Ruleset ruleset;
 
-    internal Mod[] Mods;
+    internal Mod[] Mods { get; private set; }
 
     /// <summary>
     /// The online ID of the current beatmap's ruleset. Also known as legacy gamemode ID.
     /// </summary>
     public int Mode => ruleset.RulesetInfo.OnlineID;
 
-    private PlayBeatmap(IBeatmap inner, Ruleset ruleset)
+    private PlayBeatmap(FlatWorkingBeatmap workingBeatmap, Ruleset ruleset)
     {
-        this.inner = inner;
+        this.workingBeatmap = workingBeatmap;
         this.ruleset = ruleset;
         Mods = [];
     }
@@ -42,7 +43,32 @@ public class PlayBeatmap
     /// </summary>
     public void ApplyMods(LazerMod[] mods)
     {
+        InvalidatePlayableBeatmap();
         Mods = [.. mods.Select(m => m.ToMod(ruleset))];
+    }
+
+    private IBeatmap? cachedPlayableBeatmap;
+
+    /// <summary>
+    /// Invalidate cached playable beatmap. Should be called when changing mods.
+    /// </summary>
+    private void InvalidatePlayableBeatmap() => cachedPlayableBeatmap = null;
+
+    /// <summary>
+    /// Lazily construct or get beatmap with current mods and ruleset applied.
+    /// </summary>
+    internal IBeatmap GetPlayableBeatmap()
+    {
+        if (cachedPlayableBeatmap != null)
+        {
+            return cachedPlayableBeatmap;
+        }
+
+        return cachedPlayableBeatmap = workingBeatmap.GetPlayableBeatmap(
+            ruleset.RulesetInfo,
+            Mods,
+            CancellationToken.None
+        );
     }
 
     /// <summary>
@@ -57,13 +83,7 @@ public class PlayBeatmap
             return null;
         }
 
-        var converter = ruleset.CreateBeatmapConverter(inner);
-        if (!converter.CanConvert())
-        {
-            return null;
-        }
-
-        return new(converter.Convert(), ruleset);
+        return new(workingBeatmap, ruleset);
     }
 
     /// <summary>
@@ -71,7 +91,7 @@ public class PlayBeatmap
     /// </summary>
     /// <returns></returns>
     public BeatmapDifficultyData GetOriginalBeatmapDifficulty() =>
-        BeatmapDifficultyData.FromDifficulty(inner.BeatmapInfo.Difficulty);
+        BeatmapDifficultyData.FromDifficulty(workingBeatmap.BeatmapInfo.Difficulty);
 
     /// <summary>
     /// Get beatmap difficulty with current mods applied
@@ -79,7 +99,7 @@ public class PlayBeatmap
     public BeatmapDifficultyData GetBeatmapDifficulty() =>
         BeatmapDifficultyData.FromDifficulty(
             ruleset.GetAdjustedDisplayDifficulty(
-                inner.BeatmapInfo,
+                GetPlayableBeatmap().BeatmapInfo,
                 Mods
             )
         );
@@ -90,7 +110,9 @@ public class PlayBeatmap
     public GradualDifficulty CreateGradualDifficulty()
     {
         return new GradualDifficulty(
-            ruleset.CreateDifficultyCalculator(new DiffWorkingBeatmap(inner)).CreateGradualDifficulty(Mods)
+            ruleset.CreateDifficultyCalculator(
+                new DiffWorkingBeatmap(GetPlayableBeatmap())
+            ).CreateGradualDifficulty(Mods)
         );
     }
 
@@ -124,16 +146,10 @@ public class PlayBeatmap
     {
         var bytes = Encoding.UTF8.GetBytes(content);
         using var reader = new LineBufferedReader(new MemoryStream(bytes));
-        IBeatmap beatmap = Decoder.GetDecoder<OsuBeatmap>(reader).Decode(reader);
+        Beatmap beatmap = Decoder.GetDecoder<Beatmap>(reader).Decode(reader);
         var rulesetId = beatmap.BeatmapInfo.Ruleset.OnlineID;
         var ruleset = Rulesets.FromLegacyGameMode(rulesetId) ?? throw new InvalidOperationException("Invalid ruleset: " + rulesetId);
-        // Perform conversion from legacy beatmap.
-        var converter = ruleset.CreateBeatmapConverter(beatmap);
-        if (converter.CanConvert())
-        {
-            beatmap = converter.Convert();
-        }
 
-        return new(beatmap, ruleset);
+        return new(new(beatmap), ruleset);
     }
 }
