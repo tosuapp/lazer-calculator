@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.JavaScript.NodeApi;
 using osu.Game.Rulesets.Mania.Scoring;
 using osu.Game.Rulesets.Osu.Scoring;
@@ -34,7 +35,7 @@ public enum OsuHitResult
 [JSExport]
 public static class HitWindows
 {
-    public static JSObject All(int mode, double od)
+    public static Dictionary<string, double> All(int mode, double od)
     {
         osu.Game.Rulesets.Scoring.HitWindows windows = mode switch
         {
@@ -46,11 +47,11 @@ public static class HitWindows
 
         windows.SetDifficulty(od);
 
-        var obj = new JSObject();
+        var result = new Dictionary<string, double>();
         foreach (var (hitResult, length) in windows.GetAllAvailableWindows())
-            obj[hitResult.ToString()] = length;
+            result[hitResult.ToString()] = length;
 
-        return obj;
+        return result;
     }
 
     public static double GetGreatHitWindow(int mode, double od)
