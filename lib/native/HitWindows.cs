@@ -35,7 +35,7 @@ public enum OsuHitResult
 [JSExport]
 public static class HitWindows
 {
-    public static Dictionary<string, double> All(int mode, double od)
+    public static Dictionary<OsuHitResult, double> All(int mode, double od)
     {
         osu.Game.Rulesets.Scoring.HitWindows windows = mode switch
         {
@@ -47,9 +47,9 @@ public static class HitWindows
 
         windows.SetDifficulty(od);
 
-        var result = new Dictionary<string, double>();
+        var result = new Dictionary<OsuHitResult, double>();
         foreach (var (hitResult, length) in windows.GetAllAvailableWindows())
-            result[hitResult.ToString()] = length;
+            result[(OsuHitResult)hitResult] = length;
 
         return result;
     }
