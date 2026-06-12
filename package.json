@@ -6,10 +6,8 @@
     "set-vendor": "tsx ./scripts/set-vendor.mts",
     "build": "pnpm -r build"
   },
-  "dependencies": {
-    "@npmcli/package-json": "^7.0.5"
-  },
   "devDependencies": {
+    "@npmcli/package-json": "^7.0.5",
     "@types/node": "^25.9.1",
     "@types/npmcli__package-json": "^4.0.4",
     "tsx": "^4.22.3"

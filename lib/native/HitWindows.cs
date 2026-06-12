@@ -1,4 +1,5 @@
-
+using System;
+using System.Collections.Generic;
 using Microsoft.JavaScript.NodeApi;
 using osu.Game.Rulesets.Mania.Scoring;
 using osu.Game.Rulesets.Osu.Scoring;
@@ -8,36 +9,70 @@ using osu.Game.Rulesets.Taiko.Scoring;
 namespace binding.Internal;
 
 [JSExport]
+public enum OsuHitResult
+{
+    None = HitResult.None,
+    Miss = HitResult.Miss,
+    Meh = HitResult.Meh,
+    Ok = HitResult.Ok,
+    Good = HitResult.Good,
+    Great = HitResult.Great,
+    Perfect = HitResult.Perfect,
+    SmallTickMiss = HitResult.SmallTickMiss,
+    SmallTickHit = HitResult.SmallTickHit,
+    LargeTickMiss = HitResult.LargeTickMiss,
+    LargeTickHit = HitResult.LargeTickHit,
+    SmallBonus = HitResult.SmallBonus,
+    LargeBonus = HitResult.LargeBonus,
+    IgnoreMiss = HitResult.IgnoreMiss,
+    IgnoreHit = HitResult.IgnoreHit,
+    ComboBreak = HitResult.ComboBreak,
+    SliderTailHit = HitResult.SliderTailHit,
+    LegacyComboIncrease = HitResult.LegacyComboIncrease,
+};
+
+
+[JSExport]
 public static class HitWindows
 {
+    public static Dictionary<OsuHitResult, double> All(int mode, double od)
+    {
+        var windows = HitWindowsForRuleset(mode);
+        if (windows == null) return [];
+
+        windows.SetDifficulty(od);
+
+        var result = new Dictionary<OsuHitResult, double>();
+        foreach (var (hitResult, length) in windows.GetAllAvailableWindows())
+            result[(OsuHitResult)hitResult] = length;
+
+        return result;
+    }
+
     public static double GetGreatHitWindow(int mode, double od)
     {
-        switch (mode)
-        {
-            case 0:
-                {
-                    var windows = new OsuHitWindows();
-                    windows.SetDifficulty(od);
-                    return windows.WindowFor(HitResult.Great);
-                }
-
-            case 1:
-                {
-                    var windows = new TaikoHitWindows();
-                    windows.SetDifficulty(od);
-                    return windows.WindowFor(HitResult.Great);
-                }
-            
-            // No hit windows for catch
-
-            case 3:
-                {
-                    var windows = new ManiaHitWindows();
-                    windows.SetDifficulty(od);
-                    return windows.WindowFor(HitResult.Great);
-                }
-
-            default: return 0;
-        }
+        return GetHitWindow(mode, od, OsuHitResult.Great) ?? 0;
     }
+
+    public static double? GetHitWindow(int mode, double od, OsuHitResult hitResult)
+    {
+        var windows = HitWindowsForRuleset(mode);
+        if (windows == null)
+        {
+            return null;
+        }
+        var result = (HitResult)hitResult;
+
+        windows.SetDifficulty(od);
+        return windows.WindowFor(result);
+    }
+
+    private static osu.Game.Rulesets.Scoring.HitWindows? HitWindowsForRuleset(int mode) => mode switch
+    {
+        0 => new OsuHitWindows(),
+        1 => new TaikoHitWindows(),
+        // No hit windows for catch
+        3 => new ManiaHitWindows(),
+        _ => null,
+    };
 }
