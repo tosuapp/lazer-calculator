@@ -7,11 +7,10 @@ settings:
 importers:
 
   .:
-    dependencies:
+    devDependencies:
       '@npmcli/package-json':
         specifier: ^7.0.5
         version: 7.0.5
-    devDependencies:
       '@types/node':
         specifier: ^25.9.1
         version: 25.9.1
