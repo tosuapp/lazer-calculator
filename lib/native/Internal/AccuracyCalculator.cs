@@ -1,36 +1,17 @@
 using System.Collections.Generic;
 using System.Linq;
-using binding.Data;
-using Microsoft.JavaScript.NodeApi;
 using osu.Game.Beatmaps;
 using osu.Game.Rulesets.Mods;
 using osu.Game.Rulesets.Osu.Objects;
 using osu.Game.Rulesets.Scoring;
 
-namespace binding;
+namespace binding.Internal;
 
 /// <summary>
 /// Provides methods to calculate accuracy for different gamemodes based on hit results and mods.
 /// </summary>
-[JSExport]
 public static class AccuracyCalculator
 {
-    /// <summary>
-    /// Calculate accuracy based on hit results and mods.
-    /// The beatmap's gamemode is determined by its ruleset.
-    /// From https://github.com/ppy/osu-tools/blob/master/PerformanceCalculatorGUI/RulesetHelper.cs
-    /// </summary>
-    public static double Calculate(PlayBeatmap beatmap, ScoreInfoData score)
-    {
-        var info = score.ToPerformanceScoreInfo(beatmap, beatmap.ruleset);
-        return Calculate(
-            beatmap.ruleset.RulesetInfo.OnlineID,
-            beatmap.GetPlayableBeatmap(),
-            info.Statistics,
-            info.Mods
-        );
-    }
-
     internal static double Calculate(int ruleset, IBeatmap beatmap, Dictionary<HitResult, int> statistics, Mod[] mods)
         => ruleset switch
         {
