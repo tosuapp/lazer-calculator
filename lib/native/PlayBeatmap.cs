@@ -110,6 +110,7 @@ public class PlayBeatmap
     public GradualDifficulty CreateGradualDifficulty()
     {
         return new GradualDifficulty(
+            this,
             ruleset.CreateDifficultyCalculator(
                 new DiffWorkingBeatmap(GetPlayableBeatmap())
             ).CreateGradualDifficulty(Mods)
@@ -137,6 +138,31 @@ public class PlayBeatmap
             )
         );
     }
+
+    /// <summary>
+    /// Create a score closest to given accuracy with the current beatmap.
+    /// Generated score only have hit results, accuracy.
+    /// </summary>
+    public ScoreInfoData CreateScore(double accuracy) => ScoreInfoData.FromScoreInfo(
+        ScoreSimulator.CreateScoreInfo(
+            ruleset,
+            GetPlayableBeatmap(),
+            Mods,
+            accuracy
+        )
+    );
+
+    /// <summary>
+    /// Calculate accuracy based on hit results and mods.
+    /// The beatmap's gamemode is determined by its ruleset.
+    /// From https://github.com/ppy/osu-tools/blob/master/PerformanceCalculatorGUI/RulesetHelper.cs
+    /// </summary>
+    public double CalculateAccuracy(ScoreInfoData score) => AccuracyCalculator.Calculate(
+        ruleset.RulesetInfo.OnlineID,
+        GetPlayableBeatmap(),
+        score.CreateStatistics(),
+        Mods
+    );
 
     /// <summary>
     /// Parse string osu file into Beatmap

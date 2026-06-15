@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.JavaScript.NodeApi;
 using osu.Game.Beatmaps;
 using osu.Game.Rulesets;
 using osu.Game.Rulesets.Catch.Objects;
@@ -11,41 +10,15 @@ using osu.Game.Rulesets.Mods;
 using osu.Game.Rulesets.Osu.Objects;
 using osu.Game.Rulesets.Scoring;
 using osu.Game.Scoring;
-using binding.Data;
 
-namespace binding;
+namespace binding.Internal;
 
 /// <summary>
 /// Provides methods to simulate maximum score with specific accuracy and mods for a given beatmap.
 /// </summary>
-[JSExport]
 public static class ScoreSimulator
 {
-
-    /// <summary>
-    /// Create a score closest to given accuracy with the current beatmap and mods, but only with the first `count` hitobjects.
-    /// Generated score only have hit results, accuracy and mod.
-    /// </summary>
-    public static ScoreInfoData CreatePartialScore(PlayBeatmap beatmap, int count, double accuracy) => ScoreInfoData.FromScoreInfo(
-        CreateScoreInfo(
-            beatmap.ruleset,
-            new Beatmap()
-            {
-                HitObjects = [.. beatmap.GetPlayableBeatmap().HitObjects.Take(count)]
-            },
-            beatmap.Mods,
-            accuracy
-        )
-    );
-
-    /// <summary>
-    /// Create a score closest to given accuracy with the current beatmap.
-    /// Generated score only have hit results, accuracy.
-    /// </summary>
-    public static ScoreInfoData CreateScore(PlayBeatmap beatmap, double accuracy) =>
-        ScoreInfoData.FromScoreInfo(CreateScoreInfo(beatmap.ruleset, beatmap.GetPlayableBeatmap(), beatmap.Mods, accuracy));
-
-    private static ScoreInfo CreateScoreInfo(Ruleset ruleset, IBeatmap beatmap, Mod[] mods, double accuracy)
+    internal static ScoreInfo CreateScoreInfo(Ruleset ruleset, IBeatmap beatmap, Mod[] mods, double accuracy)
     {
         Dictionary<HitResult, int> statistics = ruleset.RulesetInfo.OnlineID switch
         {

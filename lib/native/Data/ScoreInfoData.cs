@@ -34,7 +34,8 @@ public readonly struct ScoreInfoData
     public required int Mehs { get; init; }
     public required int Misses { get; init; }
 
-    private Dictionary<HitResult, int> CreateStatistics() => new Dictionary<HitResult, int>
+    internal Dictionary<HitResult, int> CreateStatistics() => new()
+
     {
         [HitResult.SliderTailHit] = SliderEndHits,
         [HitResult.ComboBreak] = ComboBreaks,
