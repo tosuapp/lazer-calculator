@@ -1,10 +1,6 @@
 using Microsoft.JavaScript.NodeApi;
 using osu.Game.Rulesets.Difficulty;
 using binding.Data;
-using System.Collections.Generic;
-using osu.Game.Rulesets.Scoring;
-using osu.Game.Rulesets.Mods;
-using osu.Game.Scoring;
 using binding.Internal;
 
 namespace binding;
@@ -26,16 +22,28 @@ public class GradualDifficulty
         return inner.Advance();
     }
 
-    public void SkipToTime(double time)
+    /// <summary>
+    /// Skips hit objects up to the specified time.
+    /// </summary>
+    /// <param name="time">The time to skip to, in milliseconds.</param>
+    /// <returns>The number of hit objects skipped.</returns>
+    public int SkipToTime(double time)
     {
-        inner.SkipToTime(time);
+        return inner.SkipToTime(time);
     }
 
+    /// <summary>
+    /// Skips the specified number of hit objects.
+    /// </summary>
+    /// <param name="offset">The number of hit objects to skip.</param>
     public void Skip(int offset)
     {
         inner.Skip(offset);
     }
 
+    /// <summary>
+    /// Skips all remaining hit objects.
+    /// </summary>
     public void SkipToEnd()
     {
         inner.SkipToEnd();
