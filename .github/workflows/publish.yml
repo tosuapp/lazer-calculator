@@ -72,6 +72,7 @@ jobs:
         env:
           NPM_CONFIG_DRY_RUN: ${{ !inputs.execute && 'true' || 'false' }}
           NPM_CONFIG_PROVENANCE: true
+          NPM_CONFIG_PUBLISH_BRANCH: ${{ github.ref_name }}
           NPM_CONFIG_TAG: ${{ inputs['dist-tag'] }}
 
       - name: Push release tag and commit
