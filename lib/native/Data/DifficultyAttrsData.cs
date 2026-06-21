@@ -47,6 +47,7 @@ public readonly struct DifficultyAttrsData
         MaxCombo = attrs.MaxCombo,
         Aim = attrs.AimDifficulty,
         Speed = attrs.SpeedDifficulty,
+        Reading = attrs.ReadingDifficulty,
         Flashlight = attrs.FlashlightDifficulty,
         SliderFactor = attrs.SliderFactor,
         SpeedNoteCount = attrs.SpeedNoteCount,
