@@ -13,8 +13,8 @@ diff --git a/osu.Game/Rulesets/Difficulty/DifficultyCalculator.cs b/osu.Game/Rul
 index 64d57ad4109..0a17366f657 100644
 --- a/osu.Game/Rulesets/Difficulty/DifficultyCalculator.cs
 +++ b/osu.Game/Rulesets/Difficulty/DifficultyCalculator.cs
-@@ -91,6 +91,28 @@ public DifficultyAttributes Calculate([NotNull] IEnumerable<Mod> mods, Cancellat
-             return CreateDifficultyAttributes(Beatmap, playableMods, skills, clockRate);
+@@ -90,6 +90,28 @@ public DifficultyAttributes Calculate([NotNull] IEnumerable<Mod> mods, Cancellat
+             return CreateDifficultyAttributes(Beatmap, playableMods, skills);
          }
  
 +        public GradualDifficultyEnumerator CreateGradualDifficulty([NotNull] IEnumerable<Mod> mods, CancellationToken cancellationToken = default)
