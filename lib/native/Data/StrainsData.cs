@@ -133,17 +133,19 @@ public struct StrainsData
     /// <summary>
     /// A wrapper skill for calculating alternative strain skill values from object difficulties.
     /// </summary>
-    private class CompatStrainSkill(IReadOnlyList<double> objectStrains) : StrainDecaySkill([])
+    private class CompatStrainSkill(IReadOnlyList<double> objectStrains) : StrainSkill([])
     {
+        private static readonly double STRAIN_DECAY_BASE = 0.15;
+    
         private int currentIndex = 0;
+        private double currentStrain = 0;
 
-        protected override double SkillMultiplier => 1;
+        protected override double CalculateInitialStrain(double time, DifficultyHitObject current)
+            => currentStrain * Math.Pow(STRAIN_DECAY_BASE, (time - current.Previous(0).StartTime) / 1000);
 
-        protected override double StrainDecayBase => 0.15;
-
-        protected override double StrainValueOf(DifficultyHitObject current)
+        protected override double StrainValueAt(DifficultyHitObject current)
         {
-            return objectStrains[currentIndex++];
+            return currentStrain = objectStrains[currentIndex++];
         }
     }
 }
