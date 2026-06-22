@@ -9,6 +9,7 @@ using osu.Game.Rulesets.Difficulty;
 using osu.Game.Rulesets.Difficulty.Preprocessing;
 using osu.Game.Rulesets.Difficulty.Skills;
 using osu.Game.Rulesets.Mania.Difficulty.Skills;
+using osu.Game.Rulesets.Mods;
 using osu.Game.Rulesets.Osu.Difficulty.Skills;
 using osu.Game.Rulesets.Taiko.Difficulty.Skills;
 
@@ -17,22 +18,18 @@ namespace binding.Data;
 [JSExport]
 public struct StrainsData
 {
-    /// <summary>
-    /// The minimum length of each object strain in milliseconds.
-    /// </summary>
-    private const double DEFAULT_STRAIN_SECTION_LENGTH = 400;
-
     #region osu!
-    public ObjectStrains Aim { get; set; }
-    public ObjectStrains AimWithoutSliders { get; set; }
-    
-    public ObjectStrains StdReading { get; set; }
+    public PeakStrains Aim { get; set; }
+    public PeakStrains AimWithoutSliders { get; set; }
     public PeakStrains Flashlight { get; set; }
-    public ObjectStrains Speed { get; set; }
+    public PeakStrains Speed { get; set; }
+    #endregion
+
+    #region osu! and osu!taiko
+    public PeakStrains Reading { get; set; }
     #endregion
 
     #region osu!taiko
-    public PeakStrains TaikoReading { get; set; }
     public PeakStrains Color { get; set; }
     public PeakStrains Rhythm { get; set; }
     public PeakStrains Stamina { get; set; }
@@ -45,16 +42,6 @@ public struct StrainsData
     #region osu!mania
     public PeakStrains Strains { get; set; }
     #endregion
-
-    /// <summary>
-    /// The times of each difficulty hit object and gap.
-    /// </summary>
-    public Memory<double> ObjectTimes { get; set; }
-    
-    /// <summary>
-    /// The end time of the last object in the beatmap.
-    /// </summary>
-    public double LastObjectEndTime { get; set; }
 
     // current strain section length is hardcoded to match with current impl because StrainSkill SectionLength is protected.
     // TODO:: use SectionLength value from StrainSkill.
@@ -71,7 +58,7 @@ public struct StrainsData
                 Color = new PeakStrains(strains, 400);
                 break;
             case osu.Game.Rulesets.Taiko.Difficulty.Skills.Reading _:
-                TaikoReading = new PeakStrains(strains, 400);
+                Reading = new PeakStrains(strains, 400);
                 break;
             case Rhythm _:
                 Rhythm = new PeakStrains(strains, 400);
@@ -90,22 +77,14 @@ public struct StrainsData
 
     private void FromDefaultSkill(DifficultyHitObject[] difficultyHitObjects, Skill skill)
     {
-        List<double> mappedStrains = new(ObjectTimes.Length);
-
-        double lastEndTime = -1;
-        foreach (var (difficultyHitObject, strain) in difficultyHitObjects.Zip(skill.GetObjectDifficulties()))
+        var objectStrains = skill.GetObjectDifficulties();
+        var compatStrainSkill = new CompatStrainSkill(objectStrains);
+        foreach (var difficultyHitObject in difficultyHitObjects)
         {
-            // If the current hit object does not start after minimum strain section length, add 0 strain for the gap.
-            if (lastEndTime != -1 && difficultyHitObject.StartTime - lastEndTime > DEFAULT_STRAIN_SECTION_LENGTH)
-            {
-                mappedStrains.Add(0);
-            }
-
-            mappedStrains.Add(strain);
-            lastEndTime = difficultyHitObject.EndTime;
+            compatStrainSkill.Process(difficultyHitObject);
         }
 
-        var strains = new ObjectStrains(mappedStrains.ToArray());
+        var strains = new PeakStrains(compatStrainSkill.GetCurrentStrainPeaks().ToArray(), 400);
         switch (skill)
         {
             case Aim aim:
@@ -122,7 +101,7 @@ public struct StrainsData
                 Speed = strains;
                 break;
             case osu.Game.Rulesets.Osu.Difficulty.Skills.Reading _:
-                StdReading = strains;
+                Reading = strains;
                 break;
         }
     }
@@ -142,11 +121,7 @@ public struct StrainsData
 
     internal static StrainsData FromEnumerator(GradualDifficultyEnumerator enumerator)
     {
-        var data = new StrainsData
-        {
-            ObjectTimes = ObjectTimesEnumerable(enumerator.DifficultyHitObjects).ToArray(),
-            LastObjectEndTime = enumerator.DifficultyHitObjects.LastOrDefault()?.EndTime ?? 0
-        };
+        var data = new StrainsData();
 
         foreach (var skill in enumerator.Skills)
         {
@@ -155,19 +130,20 @@ public struct StrainsData
         return data;
     }
 
-    private static IEnumerable<double> ObjectTimesEnumerable(DifficultyHitObject[] difficultyHitObjects)
+    /// <summary>
+    /// A wrapper skill for calculating alternative strain skill values from object difficulties.
+    /// </summary>
+    private class CompatStrainSkill(IReadOnlyList<double> objectStrains) : StrainDecaySkill([])
     {
-        double lastEndTime = -1;
-        foreach (var difficultyHitObject in difficultyHitObjects)
-        {
-            // If the current hit object does not start after minimum strain section length, yield the last end time with the section length added.
-            if (lastEndTime != -1 && difficultyHitObject.StartTime - lastEndTime > DEFAULT_STRAIN_SECTION_LENGTH)
-            {
-                yield return lastEndTime + DEFAULT_STRAIN_SECTION_LENGTH;
-            }
+        private int currentIndex = 0;
 
-            yield return difficultyHitObject.StartTime;
-            lastEndTime = difficultyHitObject.EndTime;
+        protected override double SkillMultiplier => 1;
+
+        protected override double StrainDecayBase => 0.15;
+
+        protected override double StrainValueOf(DifficultyHitObject current)
+        {
+            return objectStrains[currentIndex++];
         }
     }
 }
