@@ -4,6 +4,7 @@
   "description": "Prebuilt AOT lazer pp calculator for tosu",
   "author": "storycraft <storycraft@pancake.sh>",
   "license": "LGPL-3.0-only",
+  "repository": "github:tosuapp/lazer-calculator",
   "main": "binding.node",
   "types": "binding.d.ts"
 }
