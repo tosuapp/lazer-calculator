@@ -43,7 +43,7 @@ jobs:
 
       - name: Read version
         id: version
-        run: echo version=$(pnpm --filter @tosuapp/lazer-calculator exec npm pkg get version) >> $GITHUB_ENV
+        run: echo version=$(pnpm --filter @tosuapp/lazer-calculator exec npm pkg get version | tr -d '"') >> $GITHUB_OUTPUT
 
       - name: Publish to npm
         run: pnpm publish --filter @tosuapp/lazer-calculator --access public
