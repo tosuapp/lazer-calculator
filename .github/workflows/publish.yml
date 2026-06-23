@@ -55,7 +55,7 @@ jobs:
         id: bump
         run: |
           # Bump version and add prelease tag with YYYYMMDD format
-          OUTPUT=$(pnpm --filter @tosuapp/lazer-calculator exec npm version pre${{ inputs.level }} --preid="$(date +\%Y\%m\%d))-${{ inputs['dist-tag'] }}"
+          OUTPUT=$(pnpm --filter @tosuapp/lazer-calculator exec npm version pre${{ inputs.level }} --preid="$(date +\%Y\%m\%d)-${{ inputs['dist-tag'] }}"
           # Set prebuilt packages version
           pnpm --filter @tosuapp/lazer-calculator-* exec npm version ${OUTPUT:1}
           echo "version=${OUTPUT:1}" >> $GITHUB_OUTPUT
