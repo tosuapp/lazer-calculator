@@ -11,14 +11,7 @@ concurrency:
 
 jobs:
   deploy:
-    strategy:
-      matrix:
-        platform:
-          [
-            { ci: "windows-latest", name: "win32-x64" },
-            { ci: "ubuntu-latest", name: "linux-x64" },
-          ]
-    runs-on: ${{ matrix.platform.ci }}
+    runs-on: ubuntu-latest
     environment: deploy
     steps:
       - name: Setup ci
@@ -43,15 +36,3 @@ jobs:
 
       - name: Build native module
         run: pnpm run build
-
-      - name: Copy artifacts
-        run: cp lib/native/dist/binding.node prebuilts/${{ matrix.platform.name }} && cp lib/native/dist/binding.d.ts prebuilts/${{ matrix.platform.name }}
-
-      - name: Pack package
-        run: pnpm pack --filter @tosuapp/lazer-calculator-${{ matrix.platform.name }} --out prebuilt.tgz
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: "tosu-lazer-calculator-${{ matrix.platform.name }}"
-          path: prebuilt.tgz
