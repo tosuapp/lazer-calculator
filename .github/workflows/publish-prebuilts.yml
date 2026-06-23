@@ -8,9 +8,14 @@ on:
         description: Npm dist tag
         required: true
         default: latest
+      version:
+        type: string
+        description: Version to publish
+        required: true
       execute:
         type: boolean
         description: Actually publish (not dry run)
+        required: true
 
 concurrency:
   group: publish-prebuilts-${{ github.ref_name }}
@@ -48,6 +53,15 @@ jobs:
 
       - name: Install dependencies and run postinstall
         run: pnpm install
+
+      - name: Set version
+        run: |
+          # Set package version
+          pnpm --filter @tosuapp/lazer-calculator exec npm version ${{ inputs.version }}
+          # Set prebuilt packages version
+          pnpm --filter @tosuapp/lazer-calculator-${{ matrix.platform.name }} exec npm version ${{ inputs.version }}
+        env:
+          NPM_CONFIG_GIT_TAG_VERSION: false
 
       - name: Build native module
         run: pnpm run build
