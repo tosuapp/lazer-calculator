@@ -1,0 +1,52 @@
+name: bump-version
+
+on:
+  workflow_dispatch:
+    inputs:
+      level:
+        type: choice
+        description: Bump level
+        default: release
+        options:
+          - major
+          - minor
+          - patch
+          - release
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Setup ci
+        run: |
+          git config --global user.name "Github Actions"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+          registry-url: "https://registry.npmjs.org"
+          cache: "pnpm"
+
+      - name: Install workspace dependencies
+        run: pnpm install --filter .
+
+      - name: Bump version
+        id: bump
+        run: |
+          pnpm --filter @tosuapp/lazer-calculator* exec npm version pre${{ inputs.level }} --preid="$(date +\%Y\%m\%d)-${{ github.ref_name }}"
+        env:
+          NPM_CONFIG_GIT_TAG_VERSION: false
+
+      - name: Create release commit
+        run: |
+          git add .
+          git commit -m "chore: release v${{ steps.bump.outputs.version }}"

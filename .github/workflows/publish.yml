@@ -3,19 +3,6 @@ name: publish
 on:
   workflow_dispatch:
     inputs:
-      level:
-        type: choice
-        description: Bump level
-        default: release
-        options:
-          - major
-          - minor
-          - patch
-          - release
-      dist-tag:
-        description: Npm dist tag
-        required: true
-        default: latest
       execute:
         type: boolean
         description: Actually publish (not dry run)
@@ -23,6 +10,9 @@ on:
 concurrency:
   group: publish-${{ github.ref_name }}
   cancel-in-progress: true
+
+env:
+  NPM_CONFIG_TAG: ${{ github.ref_name == 'main' && 'latest' || github.ref_name }}
 
 jobs:
   publish:
@@ -51,22 +41,6 @@ jobs:
       - name: Install workspace dependencies
         run: pnpm install --filter .
 
-      - name: Bump version
-        id: bump
-        run: |
-          # Bump version and add prelease tag with YYYYMMDD format
-          OUTPUT=$(pnpm --filter @tosuapp/lazer-calculator exec npm version pre${{ inputs.level }} --preid="$(date +\%Y\%m\%d)-${{ inputs['dist-tag'] }}")
-          # Set prebuilt packages version
-          pnpm --filter @tosuapp/lazer-calculator-* exec npm version ${OUTPUT:1}
-          echo "version=${OUTPUT:1}" >> $GITHUB_OUTPUT
-        env:
-          NPM_CONFIG_GIT_TAG_VERSION: false
-
-      - name: Create release commit
-        run: |
-          git add .
-          git commit -m "chore: release v${{ steps.bump.outputs.version }}"
-
       - name: Publish prebuilts
         uses: ./.github/workflows/publish-prebuilts.yml
         with:
@@ -80,19 +54,59 @@ jobs:
           NPM_CONFIG_DRY_RUN: ${{ !inputs.execute && 'true' || 'false' }}
           NPM_CONFIG_PROVENANCE: true
           NPM_CONFIG_PUBLISH_BRANCH: ${{ github.ref_name }}
-          NPM_CONFIG_TAG: ${{ inputs['dist-tag'] }}
-
-      - name: Push release tag and commit
-        if: ${{ inputs.execute }}
-        run: git tag "v${{ steps.bump.outputs.version }}" && git push origin HEAD --tags
 
       - name: Release
         if: ${{ inputs.execute }}
         uses: softprops/action-gh-release@v2
         with:
-          name: 'v${{ steps.bump.outputs.version }} (${{ inputs.dist-tag }})'
+          name: "v${{ steps.bump.outputs.version }} (${{ inputs.dist-tag }})"
           draft: false
           generate_release_notes: true
           make_latest: true
           tag_name: "v${{ steps.bump.outputs.version }}"
-          target_commitish: '${{ github.ref }}'
+          target_commitish: "${{ github.ref }}"
+
+  publish-prebuilts:
+    strategy:
+      matrix:
+        platform:
+          [
+            { ci: "windows-latest", name: "win32-x64" },
+            { ci: "ubuntu-latest", name: "linux-x64" },
+          ]
+    runs-on: ${{ matrix.platform.ci }}
+    permissions:
+      id-token: write
+    steps:
+      - name: Setup ci
+        run: |
+          git config --global user.name "Github Actions"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+          registry-url: "https://registry.npmjs.org"
+          cache: "pnpm"
+
+      - name: Install dependencies and run postinstall
+        run: pnpm install
+
+      - name: Build native module
+        run: pnpm run build
+
+      - name: Copy artifacts
+        run: cp lib/native/dist/binding.node prebuilts/${{ matrix.platform.name }} && cp lib/native/dist/binding.d.ts prebuilts/${{ matrix.platform.name }}
+        
+      - name: Publish to npm
+        run: pnpm publish --filter @tosuapp/lazer-calculator-${{ matrix.platform.name }} --access public
+        env:
+          NPM_CONFIG_DRY_RUN: ${{ !inputs.execute && 'true' || 'false' }}
+          NPM_CONFIG_PROVENANCE: true
+          NPM_CONFIG_PUBLISH_BRANCH: ${{ github.ref_name }}
