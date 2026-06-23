@@ -40,7 +40,6 @@ jobs:
         run: pnpm install --filter .
 
       - name: Bump version
-        id: bump
         run: |
           pnpm --filter @tosuapp/lazer-calculator* exec npm version pre${{ inputs.level }} --preid="$(date +\%Y\%m\%d)-${{ github.ref_name }}"
         env:
@@ -49,5 +48,5 @@ jobs:
       - name: Create release commit
         run: |
           git add .
-          git commit -m "chore: release v${{ steps.bump.outputs.version }}"
+          git commit -m "chore: release"
           git push origin HEAD
