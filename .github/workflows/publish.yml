@@ -41,6 +41,10 @@ jobs:
       - name: Install workspace dependencies
         run: pnpm install --filter .
 
+      - name: Read version
+        id: version
+        run: echo version=$(pnpm --filter @tosuapp/lazer-calculator exec npm pkg get version) >> $GITHUB_ENV
+
       - name: Publish to npm
         run: pnpm publish --filter @tosuapp/lazer-calculator --access public
         env:
@@ -52,11 +56,11 @@ jobs:
         if: ${{ inputs.execute }}
         uses: softprops/action-gh-release@v2
         with:
-          name: "v${{ steps.bump.outputs.version }} (${{ inputs.dist-tag }})"
+          name: "v${{ steps.version.outputs.version }} (${{ github.env.NPM_CONFIG_TAG }})"
           draft: false
           generate_release_notes: true
           make_latest: true
-          tag_name: "v${{ steps.bump.outputs.version }}"
+          tag_name: "v${{ steps.version.outputs.version }}-${{ github.env.NPM_CONFIG_TAG }}"
           target_commitish: "${{ github.ref }}"
 
   publish-prebuilts:
@@ -68,6 +72,7 @@ jobs:
             { ci: "ubuntu-latest", name: "linux-x64" },
           ]
     runs-on: ${{ matrix.platform.ci }}
+    needs: publish
     permissions:
       id-token: write
     steps:
