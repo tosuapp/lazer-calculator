@@ -41,13 +41,6 @@ jobs:
       - name: Install workspace dependencies
         run: pnpm install --filter .
 
-      - name: Publish prebuilts
-        uses: ./.github/workflows/publish-prebuilts.yml
-        with:
-          dist-tag: ${{ inputs['dist-tag'] }}
-          version: ${{ steps.bump.outputs.version }}
-          execute: ${{ inputs.execute }}
-
       - name: Publish to npm
         run: pnpm publish --filter @tosuapp/lazer-calculator --access public
         env:
