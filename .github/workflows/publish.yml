@@ -83,7 +83,7 @@ jobs:
         if: ${{ inputs.execute }}
         uses: softprops/action-gh-release@v2
         with:
-          name: 'v${{ steps.bump.outputs.version }}'
+          name: 'v${{ steps.bump.outputs.version }} (${{ inputs.dist-tag }})'
           draft: false
           generate_release_notes: true
           make_latest: true

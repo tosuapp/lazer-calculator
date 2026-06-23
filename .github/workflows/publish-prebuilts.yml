@@ -1,0 +1,64 @@
+name: publish-prebuilts
+
+on:
+  workflow_call:
+    inputs:
+      dist-tag:
+        type: string
+        description: Npm dist tag
+        required: true
+        default: latest
+      execute:
+        type: boolean
+        description: Actually publish (not dry run)
+
+concurrency:
+  group: publish-prebuilts-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  publish-prebuilts:
+    strategy:
+      matrix:
+        platform:
+          [
+            { ci: "windows-latest", name: "win32-x64" },
+            { ci: "ubuntu-latest", name: "linux-x64" },
+          ]
+    runs-on: ${{ matrix.platform.ci }}
+    permissions:
+      id-token: write
+    steps:
+      - name: Setup ci
+        run: |
+          git config --global user.name "Github Actions"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+          registry-url: "https://registry.npmjs.org"
+          cache: "pnpm"
+
+      - name: Install dependencies and run postinstall
+        run: pnpm install
+
+      - name: Build native module
+        run: pnpm run build
+
+      - name: Copy artifacts
+        run: cp lib/native/dist/binding.node prebuilts/${{ matrix.platform.name }} && cp lib/native/dist/binding.d.ts prebuilts/${{ matrix.platform.name }}
+        
+      - name: Publish to npm
+        run: pnpm publish --filter @tosuapp/lazer-calculator-${{ matrix.platform.name }} --access public
+        env:
+          NPM_CONFIG_DRY_RUN: ${{ !inputs.execute && 'true' || 'false' }}
+          NPM_CONFIG_PROVENANCE: true
+          NPM_CONFIG_PUBLISH_BRANCH: ${{ github.ref_name }}
+          NPM_CONFIG_TAG: ${{ inputs['dist-tag'] }}
