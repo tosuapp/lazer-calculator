@@ -1,6 +1,6 @@
 {
   "name": "@tosuapp/lazer-calculator-prebuilt",
-  "version": "0.4.1-20260627-main.0",
+  "version": "0.4.1-20260627-main.1",
   "description": "Platform universal prebuilt AOT lazer pp calculator for tosu",
   "author": "storycraft <storycraft@pancake.sh>",
   "license": "LGPL-3.0-only",
