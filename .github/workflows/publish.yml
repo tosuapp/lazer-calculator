@@ -38,9 +38,6 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           cache: "pnpm"
 
-      - name: Install workspace dependencies
-        run: pnpm install --filter .
-
       - name: Read version
         id: version
         run: echo version=$(pnpm --filter @tosuapp/lazer-calculator exec npm pkg get version | tr -d '"') >> $GITHUB_OUTPUT
@@ -96,9 +93,6 @@ jobs:
       - name: Install dependencies and run postinstall
         run: pnpm install
 
-      - name: Build native module
-        run: pnpm run build
-
       - name: Copy artifacts
         run: cp lib/native/dist/binding.node prebuilts/${{ matrix.platform.name }} && cp lib/native/dist/binding.d.ts prebuilts/${{ matrix.platform.name }}
         
@@ -132,9 +126,6 @@ jobs:
           node-version: 24.x
           registry-url: "https://registry.npmjs.org"
           cache: "pnpm"
-
-      - name: Install dependencies and run postinstall
-        run: pnpm install
 
       - name: Publish to npm
         run: pnpm publish --filter @tosuapp/lazer-calculator-prebuilt --access public
