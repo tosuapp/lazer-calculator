@@ -129,8 +129,7 @@ jobs:
           cache: "pnpm"
 
       - name: Install dependencies
-        working-directory: ./prebuilts/universal
-        run: pnpm install
+        run: pnpm install --filter @tosuapp/lazer-calculator-prebuilt
 
       - name: Publish to npm
         run: pnpm publish --filter @tosuapp/lazer-calculator-prebuilt --access public
