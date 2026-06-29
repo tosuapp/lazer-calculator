@@ -1,6 +1,6 @@
 {
   "name": "@tosuapp/lazer-calculator-win32-x64",
-  "version": "0.4.1-20260623-pp-dev.0",
+  "version": "0.4.1-20260629-pp-dev.0",
   "description": "Prebuilt AOT lazer pp calculator for tosu",
   "author": "storycraft <storycraft@pancake.sh>",
   "license": "LGPL-3.0-only",
