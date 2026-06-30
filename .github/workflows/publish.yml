@@ -38,12 +38,10 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           cache: "pnpm"
 
-      - name: Install workspace dependencies
-        run: pnpm install --filter .
-
       - name: Read version
         id: version
-        run: echo version=$(pnpm --filter @tosuapp/lazer-calculator exec npm pkg get version | tr -d '"') >> $GITHUB_OUTPUT
+        working-directory: ./lib
+        run: echo version=$(npm pkg get version | tr -d '"') >> $GITHUB_OUTPUT
 
       - name: Publish to npm
         run: pnpm publish --filter @tosuapp/lazer-calculator --access public
@@ -96,9 +94,6 @@ jobs:
       - name: Install dependencies and run postinstall
         run: pnpm install
 
-      - name: Build native module
-        run: pnpm run build
-
       - name: Copy artifacts
         run: cp lib/native/dist/binding.node prebuilts/${{ matrix.platform.name }} && cp lib/native/dist/binding.d.ts prebuilts/${{ matrix.platform.name }}
         
@@ -109,3 +104,36 @@ jobs:
           NPM_CONFIG_PROVENANCE: true
           NPM_CONFIG_PUBLISH_BRANCH: ${{ github.ref_name }}
           NPM_CONFIG_GIT_CHECKS: false
+
+  publish-universal-prebuilt:
+    runs-on: ubuntu-latest
+    needs: publish-prebuilts
+    permissions:
+      id-token: write
+    steps:
+      - name: Setup ci
+        run: |
+          git config --global user.name "Github Actions"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+          registry-url: "https://registry.npmjs.org"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --filter @tosuapp/lazer-calculator-prebuilt
+
+      - name: Publish to npm
+        run: pnpm publish --filter @tosuapp/lazer-calculator-prebuilt --access public
+        env:
+          NPM_CONFIG_DRY_RUN: ${{ !inputs.execute && 'true' || 'false' }}
+          NPM_CONFIG_PROVENANCE: true
+          NPM_CONFIG_PUBLISH_BRANCH: ${{ github.ref_name }}

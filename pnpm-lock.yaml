@@ -29,6 +29,15 @@ importers:
 
   prebuilts/linux-x64: {}
 
+  prebuilts/universal:
+    optionalDependencies:
+      '@tosuapp/lazer-calculator-linux-x64':
+        specifier: workspace:*
+        version: link:../linux-x64
+      '@tosuapp/lazer-calculator-win32-x64':
+        specifier: workspace:*
+        version: link:../win32-x64
+
   prebuilts/win32-x64: {}
 
 packages:
