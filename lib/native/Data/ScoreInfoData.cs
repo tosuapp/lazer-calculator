@@ -55,11 +55,11 @@ public readonly struct ScoreInfoData
         [HitResult.Miss] = Misses,
     };
 
-    internal ScoreInfo ToPerformanceScoreInfo(PlayBeatmap beatmap, Ruleset ruleset)
+    internal ScoreInfo ToPerformanceScoreInfo(PlayBeatmap beatmap)
     {
         ScoreInfo info = new(
             beatmap.GetPlayableBeatmap().BeatmapInfo,
-            ruleset.RulesetInfo
+            beatmap.ruleset.RulesetInfo
         )
         {
             TotalScore = TotalScore,

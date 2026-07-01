@@ -133,7 +133,7 @@ public class PlayBeatmap
 
         return PerformanceAttrsData.FromAttrs(
             calc.Calculate(
-                score.ToPerformanceScoreInfo(this, ruleset),
+                score.ToPerformanceScoreInfo(this),
                 attrs.Inner
             )
         );
