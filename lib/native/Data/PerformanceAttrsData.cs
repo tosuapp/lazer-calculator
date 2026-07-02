@@ -18,6 +18,7 @@ public readonly struct PerformanceAttrsData
     public double Aim { get; init; }
     public double Flashlight { get; init; }
     public double Speed { get; init; }
+    public double Reading { get; init; }
     public double Accuracy { get; init; }
     public double EffectiveMissCount { get; init; }
     #endregion
@@ -37,6 +38,7 @@ public readonly struct PerformanceAttrsData
         Aim = attrs.Aim,
         Flashlight = attrs.Flashlight,
         Speed = attrs.Speed,
+        Reading = attrs.Reading,
         Accuracy = attrs.Accuracy,
         EffectiveMissCount = attrs.EffectiveMissCount,
     };

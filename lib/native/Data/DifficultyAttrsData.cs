@@ -29,11 +29,14 @@ public readonly struct DifficultyAttrsData
     public int NSpinners { get; init; }
     #endregion
 
+    #region osu! and osu!taiko
+    public double Reading { get; init; }
+    #endregion
+
     #region osu!taiko
     public double Stamina { get; init; }
     public double Rhythm { get; init; }
     public double Color { get; init; }
-    public double Reading { get; init; }
     #endregion
 
     #region osu!catch
@@ -47,6 +50,7 @@ public readonly struct DifficultyAttrsData
         MaxCombo = attrs.MaxCombo,
         Aim = attrs.AimDifficulty,
         Speed = attrs.SpeedDifficulty,
+        Reading = attrs.ReadingDifficulty,
         Flashlight = attrs.FlashlightDifficulty,
         SliderFactor = attrs.SliderFactor,
         SpeedNoteCount = attrs.SpeedNoteCount,

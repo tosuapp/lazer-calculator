@@ -73,5 +73,5 @@ public class GradualDifficulty
     /// <summary>
     /// Gets the strains of the current difficulty section.
     /// </summary>
-    public StrainsData GetCurrentStrains() => StrainsData.FromSkills(inner.Skills);
+    public StrainsData GetCurrentStrains() => StrainsData.FromEnumerator(inner);
 }

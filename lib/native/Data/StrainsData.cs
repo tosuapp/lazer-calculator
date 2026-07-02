@@ -1,10 +1,15 @@
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.JavaScript.NodeApi;
+using Microsoft.Toolkit.HighPerformance;
 using osu.Game.Rulesets.Catch.Difficulty.Skills;
+using osu.Game.Rulesets.Difficulty;
+using osu.Game.Rulesets.Difficulty.Preprocessing;
 using osu.Game.Rulesets.Difficulty.Skills;
 using osu.Game.Rulesets.Mania.Difficulty.Skills;
+using osu.Game.Rulesets.Mods;
 using osu.Game.Rulesets.Osu.Difficulty.Skills;
 using osu.Game.Rulesets.Taiko.Difficulty.Skills;
 
@@ -20,10 +25,13 @@ public struct StrainsData
     public PeakStrains Speed { get; set; }
     #endregion
 
+    #region osu! and osu!taiko
+    public PeakStrains Reading { get; set; }
+    #endregion
+
     #region osu!taiko
     public PeakStrains Color { get; set; }
     public PeakStrains Rhythm { get; set; }
-    public PeakStrains Reading { get; set; }
     public PeakStrains Stamina { get; set; }
     #endregion
 
@@ -37,31 +45,19 @@ public struct StrainsData
 
     // current strain section length is hardcoded to match with current impl because StrainSkill SectionLength is protected.
     // TODO:: use SectionLength value from StrainSkill.
-    private void SetStrains(StrainSkill skill)
+
+    private void FromStrainSkill(StrainSkill skill)
     {
         var strains = skill.GetCurrentStrainPeaks().ToArray();
         switch (skill)
         {
-            case Aim aim:
-                if (aim.IncludeSliders)
-                {
-                    Aim = new PeakStrains(strains, 400);
-                }
-                else
-                {
-                    AimWithoutSliders = new PeakStrains(strains, 400);
-                }
-                break;
             case Flashlight _:
                 Flashlight = new PeakStrains(strains, 400);
-                break;
-            case Speed _:
-                Speed = new PeakStrains(strains, 400);
                 break;
             case Colour _:
                 Color = new PeakStrains(strains, 400);
                 break;
-            case Reading _:
+            case osu.Game.Rulesets.Taiko.Difficulty.Skills.Reading _:
                 Reading = new PeakStrains(strains, 400);
                 break;
             case Rhythm _:
@@ -79,17 +75,77 @@ public struct StrainsData
         }
     }
 
-    internal static StrainsData FromSkills(Skill[] skills)
+    private void FromDefaultSkill(DifficultyHitObject[] difficultyHitObjects, Skill skill)
     {
-        var data = new StrainsData();
-        foreach (var skill in skills)
+        var objectStrains = skill.GetObjectDifficulties();
+        var compatStrainSkill = new CompatStrainSkill(objectStrains);
+        foreach (var difficultyHitObject in difficultyHitObjects)
         {
-            if (skill is StrainSkill strainSkill)
-            {
-                data.SetStrains(strainSkill);
-            }
+            compatStrainSkill.Process(difficultyHitObject);
         }
 
+        var strains = new PeakStrains(compatStrainSkill.GetCurrentStrainPeaks().ToArray(), 400);
+        switch (skill)
+        {
+            case Aim aim:
+                if (aim.IncludeSliders)
+                {
+                    Aim = strains;
+                }
+                else
+                {
+                    AimWithoutSliders = strains;
+                }
+                break;
+            case Speed _:
+                Speed = strains;
+                break;
+            case osu.Game.Rulesets.Osu.Difficulty.Skills.Reading _:
+                Reading = strains;
+                break;
+        }
+    }
+
+    private void FromSkill(DifficultyHitObject[] difficultyHitObjects, Skill skill)
+    {
+        switch (skill)
+        {
+            case StrainSkill strainSkill:
+                FromStrainSkill(strainSkill);
+                return;
+            default:
+                FromDefaultSkill(difficultyHitObjects, skill);
+                return;
+        }
+    }
+
+    internal static StrainsData FromEnumerator(GradualDifficultyEnumerator enumerator)
+    {
+        var data = new StrainsData();
+
+        foreach (var skill in enumerator.Skills)
+        {
+            data.FromSkill(enumerator.DifficultyHitObjects, skill);
+        }
         return data;
+    }
+
+    /// <summary>
+    /// A wrapper skill for calculating alternative strain skill values from object difficulties.
+    /// </summary>
+    private class CompatStrainSkill(IReadOnlyList<double> objectStrains) : StrainSkill([])
+    {
+        private static readonly double STRAIN_DECAY_BASE = 0.15;
+    
+        private int currentIndex = 0;
+        private double currentStrain = 0;
+
+        protected override double CalculateInitialStrain(double time, DifficultyHitObject current)
+            => currentStrain * Math.Pow(STRAIN_DECAY_BASE, (time - current.Previous(0).StartTime) / 1000);
+
+        protected override double StrainValueAt(DifficultyHitObject current)
+        {
+            return currentStrain = objectStrains[currentIndex++];
+        }
     }
 }
