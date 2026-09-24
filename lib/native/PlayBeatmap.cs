@@ -77,9 +77,12 @@ public class PlayBeatmap
     }
 
     /// <summary>
-    /// Check if current mods combination is rankable.
+    /// Check if given or current mods combination is rankable.
     /// </summary>
-    public bool CanModsRanked() => Mods.All(mod => mod.Ranked);
+    public bool CanModsRanked(LazerMod[]? mods) {
+        var list = mods?.Select(m => m.ToMod(ruleset)) ?? Mods;
+        return list.All(mod => mod.Ranked);
+    }
 
     /// <summary>
     /// Perform beatmap conversion to another gamemode.
