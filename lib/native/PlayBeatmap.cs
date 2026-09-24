@@ -79,7 +79,8 @@ public class PlayBeatmap
     /// <summary>
     /// Check if given or current mods combination is rankable.
     /// </summary>
-    public bool CanModsRanked(LazerMod[]? mods) {
+    public bool CanModsRanked(LazerMod[]? mods)
+    {
         var list = mods?.Select(m => m.ToMod(ruleset)) ?? Mods;
         return list.All(mod => mod.Ranked);
     }
