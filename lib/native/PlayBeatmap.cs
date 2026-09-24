@@ -77,6 +77,22 @@ public class PlayBeatmap
     }
 
     /// <summary>
+    /// Check if current mods combination is rankable.
+    /// </summary>
+    public bool CanModsRanked()
+    {
+        foreach (var mod in Mods)
+        {
+            if (!mod.Ranked)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    } 
+
+    /// <summary>
     /// Perform beatmap conversion to another gamemode.
     /// Applied mods will not be retained to returned beatmap.
     /// </summary>
