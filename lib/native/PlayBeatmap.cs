@@ -77,6 +77,15 @@ public class PlayBeatmap
     }
 
     /// <summary>
+    /// Check if given or current mods combination is rankable.
+    /// </summary>
+    public bool IsModsRankable(LazerMod[]? mods)
+    {
+        var list = mods?.Select(m => m.ToMod(ruleset)) ?? Mods;
+        return list.All(mod => mod.Ranked);
+    }
+
+    /// <summary>
     /// Perform beatmap conversion to another gamemode.
     /// Applied mods will not be retained to returned beatmap.
     /// </summary>
@@ -189,7 +198,7 @@ public class PlayBeatmap
     {
         var bytes = Encoding.UTF8.GetBytes(content);
         using var reader = new LineBufferedReader(new MemoryStream(bytes));
-        
+
         return FromBeatmap(Decoder.GetDecoder<Beatmap>(reader).Decode(reader));
     }
 
