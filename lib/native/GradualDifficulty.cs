@@ -1,3 +1,4 @@
+using System;
 using Microsoft.JavaScript.NodeApi;
 using osu.Game.Rulesets.Difficulty;
 using binding.Data;
@@ -8,11 +9,14 @@ using osu.Game.Rulesets.Mods;
 namespace binding;
 
 [JSExport]
-public class GradualDifficulty
+public class GradualDifficulty : IDisposable
 {
     private readonly Ruleset ruleset;
     private readonly Mod[] mods;
-    private readonly GradualDifficultyEnumerator inner;
+    private GradualDifficultyEnumerator? inner;
+
+    private GradualDifficultyEnumerator Inner =>
+        inner ?? throw new ObjectDisposedException(nameof(GradualDifficulty));
 
     internal GradualDifficulty(Ruleset ruleset, Mod[] mods, GradualDifficultyEnumerator inner)
     {
@@ -23,7 +27,7 @@ public class GradualDifficulty
 
     public bool Advance()
     {
-        return inner.Advance();
+        return Inner.Advance();
     }
 
     /// <summary>
@@ -33,7 +37,7 @@ public class GradualDifficulty
     /// <returns>The number of hit objects skipped.</returns>
     public int SkipToTime(double time)
     {
-        return inner.SkipToTime(time);
+        return Inner.SkipToTime(time);
     }
 
     /// <summary>
@@ -42,7 +46,7 @@ public class GradualDifficulty
     /// <param name="offset">The number of hit objects to skip.</param>
     public void Skip(int offset)
     {
-        inner.Skip(offset);
+        Inner.Skip(offset);
     }
 
     /// <summary>
@@ -50,12 +54,12 @@ public class GradualDifficulty
     /// </summary>
     public void SkipToEnd()
     {
-        inner.SkipToEnd();
+        Inner.SkipToEnd();
     }
 
     public DifficultyAttrs CreateDifficultyAttrs()
     {
-        return new(inner.CreateDifficultyAttributes());
+        return new(Inner.CreateDifficultyAttributes());
     }
 
     /// <summary>
@@ -63,7 +67,7 @@ public class GradualDifficulty
     /// </summary>
     public double CalculateProgressiveAccuracy(ScoreInfoData data)
     {
-        return AccuracyCalculator.Calculate(ruleset.RulesetInfo.OnlineID, inner.ProgressiveBeatmap, data.CreateStatistics(), mods);
+        return AccuracyCalculator.Calculate(ruleset.RulesetInfo.OnlineID, Inner.ProgressiveBeatmap, data.CreateStatistics(), mods);
     }
 
     /// <summary>
@@ -72,11 +76,27 @@ public class GradualDifficulty
     /// </summary>
     public ScoreInfoData CreateProgressiveScore(double accuracy)
     {
-        return ScoreInfoData.FromScoreInfo(ScoreSimulator.CreateScoreInfo(ruleset, inner.ProgressiveBeatmap, mods, accuracy));
+        return ScoreInfoData.FromScoreInfo(ScoreSimulator.CreateScoreInfo(ruleset, Inner.ProgressiveBeatmap, mods, accuracy));
     }
 
     /// <summary>
     /// Gets the strains of the current difficulty section.
     /// </summary>
-    public StrainsData GetCurrentStrains() => StrainsData.FromEnumerator(inner);
+    public StrainsData GetCurrentStrains() => StrainsData.FromEnumerator(Inner);
+
+    /// <summary>
+    /// Releases the underlying gradual difficulty enumerator and its progressive
+    /// beatmap state.
+    /// </summary>
+    /// <remarks>
+    /// The JS proxy created for this instance keeps the .NET object alive across the
+    /// interop boundary, so the enumerator (which references the playable beatmap and
+    /// every difficulty hit object/skill) would otherwise remain rooted for the module
+    /// lifetime. Call this once the instance is no longer needed. The instance must not
+    /// be used afterwards.
+    /// </remarks>
+    public void Dispose()
+    {
+        inner = null;
+    }
 }

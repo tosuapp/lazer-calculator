@@ -19,11 +19,14 @@ namespace binding;
 /// A beatmap with a ruleset and applied mods.
 /// </summary>
 [JSExport]
-public class PlayBeatmap
+public class PlayBeatmap : IDisposable
 {
-    private readonly FlatWorkingBeatmap workingBeatmap;
+    private FlatWorkingBeatmap? workingBeatmap;
 
-    internal IBeatmap Beatmap => workingBeatmap.Beatmap;
+    internal IBeatmap Beatmap => Working.Beatmap;
+
+    private FlatWorkingBeatmap Working =>
+        workingBeatmap ?? throw new ObjectDisposedException(nameof(PlayBeatmap));
 
     internal readonly Ruleset ruleset;
 
@@ -69,7 +72,7 @@ public class PlayBeatmap
             return cachedPlayableBeatmap;
         }
 
-        return cachedPlayableBeatmap = workingBeatmap.GetPlayableBeatmap(
+        return cachedPlayableBeatmap = Working.GetPlayableBeatmap(
             ruleset.RulesetInfo,
             Mods,
             CancellationToken.None
@@ -97,7 +100,7 @@ public class PlayBeatmap
             return null;
         }
 
-        return new(workingBeatmap, ruleset);
+        return new(Working, ruleset);
     }
 
     /// <summary>
@@ -105,7 +108,7 @@ public class PlayBeatmap
     /// </summary>
     /// <returns></returns>
     public BeatmapDifficultyData GetOriginalBeatmapDifficulty() =>
-        BeatmapDifficultyData.FromDifficulty(workingBeatmap.BeatmapInfo.Difficulty);
+        BeatmapDifficultyData.FromDifficulty(Working.BeatmapInfo.Difficulty);
 
     /// <summary>
     /// Get beatmap difficulty with current mods applied
@@ -127,7 +130,7 @@ public class PlayBeatmap
             ruleset,
             Mods,
             ruleset.CreateDifficultyCalculator(
-                new DiffWorkingBeatmap(workingBeatmap.Beatmap, GetPlayableBeatmap())
+                new DiffWorkingBeatmap(Working.Beatmap, GetPlayableBeatmap())
             ).CreateGradualDifficulty(Mods)
         );
     }
@@ -149,7 +152,7 @@ public class PlayBeatmap
         return PerformanceAttrsData.FromAttrs(
             calc.Calculate(
                 score.ToPerformanceScoreInfo(this),
-                attrs.Inner
+                attrs.InnerAttrs
             )
         );
     }
@@ -189,6 +192,28 @@ public class PlayBeatmap
         ).FirstAvailableHitWindows
         ?? osu.Game.Rulesets.Scoring.HitWindows.Empty
     );
+
+    /// <summary>
+    /// Releases the decoded beatmap and any cached playable beatmap.
+    /// </summary>
+    /// <remarks>
+    /// The JS proxy created for this instance keeps the .NET object alive across the
+    /// interop boundary, so relying on GC alone retains the entire beatmap object
+    /// graph (tens of MB per map). Calling this after the beatmap is no longer needed
+    /// drops the heavy references deterministically. The instance must not be used
+    /// afterwards.
+    /// </remarks>
+    public void Dispose()
+    {
+        if (workingBeatmap is null)
+        {
+            return;
+        }
+
+        cachedPlayableBeatmap = null;
+        Mods = [];
+        workingBeatmap = null;
+    }
 
     /// <summary>
     /// Parse string osu file into Beatmap
