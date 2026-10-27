@@ -54,7 +54,7 @@ public readonly struct DifficultyAttrsData
         Aim = attrs.AimDifficulty,
         Speed = attrs.SpeedDifficulty,
         Reading = attrs.ReadingDifficulty,
-        Flashlight = attrs.FlashlightDifficulty,
+        Flashlight = attrs.FlashlightDifficulty ?? 0,
         SliderFactor = attrs.SliderFactor,
         SpeedNoteCount = attrs.SpeedNoteCount,
         AimDifficultSliderCount = attrs.AimDifficultSliderCount,
