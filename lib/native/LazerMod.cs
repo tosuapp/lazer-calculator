@@ -9,8 +9,8 @@ namespace binding;
 [JSExport]
 public struct LazerMod
 {
-    public string Acronym { get; set; }
-    public Dictionary<string, object> Settings { get; set; }
+    public required string Acronym { get; set; }
+    public required Dictionary<string, object> Settings { get; set; }
 
     internal readonly Mod ToMod(Ruleset ruleset)
     {
