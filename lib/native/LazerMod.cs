@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using Microsoft.JavaScript.NodeApi;
-using osu.Game.Online.API;
 using osu.Game.Rulesets;
 using osu.Game.Rulesets.Mods;
+using osu.Game.Scoring;
 
 namespace binding;
 
@@ -14,12 +14,18 @@ public struct LazerMod
 
     internal readonly Mod ToMod(Ruleset ruleset)
     {
-        var apiMod = new APIMod
+        var inner = new ModImpl
         {
             Acronym = Acronym,
             Settings = Settings,
         };
 
-        return apiMod.ToMod(ruleset);
+        return inner.ToMod(ruleset);
+    }
+
+    class ModImpl : IConfiguredMod
+    {
+        public required string Acronym { get; init; }
+        public required IReadOnlyDictionary<string, object> Settings { get; init; }
     }
 }
